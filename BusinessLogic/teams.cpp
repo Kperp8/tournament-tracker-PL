@@ -1,7 +1,16 @@
 #include "teams.h"
+#include <QDebug>
 
 Teams::Teams(const QString &name)
-    : name(name), points(0), goalsFor(0), goalsAgainst(0), matchesPlayed(0) {}
+{
+
+    this->name = name;
+    this->points = 0;
+    this->goalsFor = 0;
+    this->goalsAgainst = 0;
+    this->matchesPlayed = 0;
+
+}
 
 QString Teams::getName() const {
     return name;
@@ -34,3 +43,14 @@ int Teams::getGoalsAgainst() const {
 int Teams::getMatchesPlayed() const {
     return matchesPlayed;
 }
+
+void Teams::displayData() const
+{
+    qDebug() << "Drużyna:" << name
+             << "| Punkty:" << points
+             << "| Gole zdobyte:" << goalsFor
+             << "| Gole stracone:" << goalsAgainst
+             << "| Mecze:" << matchesPlayed;
+}
+
+//cd /c/Users/hugou/tournament-tracker-PL
