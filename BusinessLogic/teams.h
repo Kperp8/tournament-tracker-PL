@@ -16,6 +16,8 @@ public:
     int getGoalsFor() const;
     int getGoalsAgainst() const;
     int getMatchesPlayed() const;
+    void displayData() const;
+
 
 private:
     QString name;

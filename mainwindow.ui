@@ -27,14 +27,14 @@
    <widget class="QComboBox" name="select_B">
     <property name="geometry">
      <rect>
-      <x>430</x>
+      <x>480</x>
       <y>230</y>
       <width>141</width>
       <height>28</height>
      </rect>
     </property>
    </widget>
-   <widget class="QSpinBox" name="spinBox">
+   <widget class="QSpinBox" name="spinBox_A">
     <property name="geometry">
      <rect>
       <x>250</x>
@@ -44,10 +44,10 @@
      </rect>
     </property>
    </widget>
-   <widget class="QSpinBox" name="spinBox_2">
+   <widget class="QSpinBox" name="spinBox_B">
     <property name="geometry">
      <rect>
-      <x>360</x>
+      <x>410</x>
       <y>230</y>
       <width>61</width>
       <height>29</height>
@@ -57,8 +57,8 @@
    <widget class="QLineEdit" name="lineEdit_druzyna">
     <property name="geometry">
      <rect>
-      <x>270</x>
-      <y>397</y>
+      <x>290</x>
+      <y>390</y>
       <width>131</width>
       <height>31</height>
      </rect>
@@ -67,14 +67,27 @@
    <widget class="QPushButton" name="add_team">
     <property name="geometry">
      <rect>
-      <x>270</x>
-      <y>430</y>
+      <x>290</x>
+      <y>420</y>
       <width>121</width>
       <height>29</height>
      </rect>
     </property>
     <property name="text">
      <string>dodaj druzyne</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="add_match">
+    <property name="geometry">
+     <rect>
+      <x>310</x>
+      <y>270</y>
+      <width>91</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>dodaj mecz</string>
     </property>
    </widget>
   </widget>
