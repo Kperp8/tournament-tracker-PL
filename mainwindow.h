@@ -22,6 +22,8 @@ private slots:
 
     void on_add_team_clicked();
 
+    void on_testButton_clicked();
+
 private:
     void refreshCombos();
 
