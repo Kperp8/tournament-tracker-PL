@@ -4,7 +4,7 @@
 #include <QList>
 #include "teams.h"
 
-class TeamsModel : public QAbstractTableModel
+class BUSINESSLOGIC_EXPORT TeamsModel : public QAbstractTableModel
 {
     Q_OBJECT
     QList<Teams> q_teams;
