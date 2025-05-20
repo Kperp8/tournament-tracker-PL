@@ -15,6 +15,8 @@ add_library(BusinessLogic SHARED
   BusinessLogic_global.h
   teams.cpp
   teams.h
+  teamsmodel.h
+  teamsmodel.cpp
 )
 
 target_link_libraries(BusinessLogic PRIVATE Qt${QT_VERSION_MAJOR}::Core)
