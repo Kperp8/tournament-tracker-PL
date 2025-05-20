@@ -2,6 +2,7 @@
 #include "./ui_mainwindow.h"
 #include <QMessageBox>
 #include "BusinessLogic/teamsmodel.h"
+#include <QDebug>
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -29,7 +30,16 @@ void MainWindow::on_add_team_clicked()
         }
     }
 
-    m_teams.append(Teams(name));
+
+    if(m_teams.append(Teams(name)); true)
+    {
+        qDebug() << "dodano" << name;
+        for(int i = 0; i < m_teams.size(); ++i)
+        {
+            qDebug() << i << m_teams[i].getName();
+        }
+
+    }
     refreshCombos();
     ui->lineEdit_druzyna->clear();
 }
@@ -45,7 +55,6 @@ void MainWindow::refreshCombos()
     }
 
 }
-
 
 void MainWindow::on_testButton_clicked()
 {
@@ -63,5 +72,39 @@ void MainWindow::on_testButton_clicked()
     TeamsModel* model = new TeamsModel(this);
     model->setTeams(teamsList);
     ui->scoresTable->setModel(model);
+}
+
+void MainWindow::on_add_match_clicked()
+{
+    QString teamAName = ui->select_A->currentText();
+    QString teamBName = ui->select_B->currentText();
+    int goalsA = ui->spinBox_A->value();
+    int goalsB = ui->spinBox_B->value();
+
+    int indexA = -1, indexB = -1;
+    for (int i = 0; i < m_teams.size(); ++i) {
+        if (m_teams[i].getName() == teamAName) indexA = i;
+        if (m_teams[i].getName() == teamBName) indexB = i;
+    }
+
+    if (indexA == -1 || indexB == -1) {
+        QMessageBox::warning(this, "Błąd", "Nie znaleziono jednej z drużyn.");
+        return;
+    }
+
+    if (indexA == indexB) {
+        QMessageBox::warning(this, "Błąd", "Nie można rozegrać meczu przeciwko sobie.");
+        return;
+    }
+
+    m_teams[indexA].addMatch(goalsA, goalsB);
+    m_teams[indexB].addMatch(goalsB, goalsA);
+
+    qDebug() << "Mecz dodany:" << teamAName << goalsA << "-" << goalsB << teamBName;
+
+    for(int i = 0; i < m_teams.size(); ++i)
+    {
+        m_teams[i].displayData();
+    }
 }
 
