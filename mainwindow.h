@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "BusinessLogic/teams.h"
 #include <QVector>
+#include "BusinessLogic/teamsmodel.h"
          // include z biblioteki
 
 QT_BEGIN_NAMESPACE
@@ -31,6 +32,7 @@ private:
 
     Ui::MainWindow *ui;
     QVector<Teams>  m_teams;
+    TeamsModel * model;
 };
 
 #endif // MAINWINDOW_H

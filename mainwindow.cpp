@@ -58,20 +58,20 @@ void MainWindow::refreshCombos()
 
 void MainWindow::on_testButton_clicked()
 {
-    QList<Teams> teamsList;
+    // QList<Teams> teamsList;
 
-    Teams team1("Team A");
-    team1.addMatch(15, 4);
-    Teams team2("Team B");
-    team2.addMatch(453,123);
-    team2.addMatch(4,1);
+    // Teams team1("Team A");
+    // team1.addMatch(15, 4);
+    // Teams team2("Team B");
+    // team2.addMatch(453,123);
+    // team2.addMatch(4,1);
 
-    teamsList.append(team1);
-    teamsList.append(team2);
+    // teamsList.append(team1);
+    // teamsList.append(team2);
 
-    TeamsModel* model = new TeamsModel(this);
-    model->setTeams(teamsList);
-    ui->scoresTable->setModel(model);
+    // TeamsModel* model = new TeamsModel(this);
+    // model->setTeams(teamsList);
+    // ui->scoresTable->setModel(model);
 }
 
 void MainWindow::on_add_match_clicked()
@@ -106,5 +106,9 @@ void MainWindow::on_add_match_clicked()
     {
         m_teams[i].displayData();
     }
+
+    model = new TeamsModel();
+    model->setTeams(m_teams); // na razie tak brzydko, raczej do poprawy
+    ui->scoresTable->setModel(model);
 }
 
