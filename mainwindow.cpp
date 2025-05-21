@@ -45,8 +45,10 @@ void MainWindow::on_add_team_clicked()
     }
     refreshCombos();
     ui->lineEdit_druzyna->clear();
-    model = new TeamsModel();
-    model->setTeams(m_teams); // na razie tak brzydko, raczej do poprawy
+
+    if(model == nullptr)
+        model = new TeamsModel();
+    model->setTeams(m_teams); // potencjalnie nieoptymalnie
     ui->scoresTable->setModel(model);
 }
 
@@ -94,8 +96,9 @@ void MainWindow::on_add_match_clicked()
         m_teams[i].displayData();
     }
 
-    model = new TeamsModel();
-    model->setTeams(m_teams); // na razie tak brzydko, raczej do poprawy
+    if(model == nullptr)
+        model = new TeamsModel();
+    model->setTeams(m_teams); // potencjalnie nieoptymalnie
     ui->scoresTable->setModel(model);
 }
 

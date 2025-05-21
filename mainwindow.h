@@ -30,7 +30,7 @@ private:
 
     Ui::MainWindow *ui;
     QVector<Teams>  m_teams;
-    TeamsModel * model;
+    TeamsModel * model = nullptr;
 };
 
 #endif // MAINWINDOW_H

@@ -10,7 +10,7 @@ class BUSINESSLOGIC_EXPORT TeamsModel : public QAbstractTableModel
 public:
     TeamsModel(QObject* parent = nullptr) : QAbstractTableModel(parent) {}
 
-    void setTeams(QList<Teams> teams); // przekazuje listę obiektów drużyn do obiektu tej klasy
+    void setTeams(QList<Teams> teams); // aktualizuje liste obiektow do wyświetlenia, TRZEBA WEZWAĆ PRZY KAŻDEJ ZMIANIE
     int rowCount(const QModelIndex& parent = QModelIndex()) const override; // potrzebujemy dla QAbstractTable
     int columnCount(const QModelIndex& parent = QModelIndex()) const override; // jak powyżej
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override; // przekazuje dane do tabeli
