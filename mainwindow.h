@@ -22,8 +22,6 @@ private slots:
 
 
     void on_add_team_clicked();
-
-    void on_testButton_clicked();
     
     void on_add_match_clicked();
 
