@@ -10,6 +10,9 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    model = new TeamsModel();
+    ui->scoresTable->setModel(model); // dzięki temu tabela zawsze będzie mieć kolumny, nawet zanim dodamy zespoły
+    ui->scoresTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch); // dzięki temu kolumny tabeli skalują się do okna
 }
 
 MainWindow::~MainWindow() { delete ui; }
@@ -42,6 +45,11 @@ void MainWindow::on_add_team_clicked()
     }
     refreshCombos();
     ui->lineEdit_druzyna->clear();
+
+    if(model == nullptr)
+        model = new TeamsModel();
+    model->setTeams(m_teams); // potencjalnie nieoptymalnie
+    ui->scoresTable->setModel(model);
 }
 
 void MainWindow::refreshCombos()
@@ -53,25 +61,6 @@ void MainWindow::refreshCombos()
         ui->select_A->addItem(m_teams[i].getName());
         ui->select_B->addItem(m_teams[i].getName());
     }
-
-}
-
-void MainWindow::on_testButton_clicked()
-{
-    QList<Teams> teamsList;
-
-    Teams team1("Team A");
-    team1.addMatch(15, 4);
-    Teams team2("Team B");
-    team2.addMatch(453,123);
-    team2.addMatch(4,1);
-
-    teamsList.append(team1);
-    teamsList.append(team2);
-
-    TeamsModel* model = new TeamsModel(this);
-    model->setTeams(teamsList);
-    ui->scoresTable->setModel(model);
 }
 
 void MainWindow::on_add_match_clicked()
@@ -106,5 +95,10 @@ void MainWindow::on_add_match_clicked()
     {
         m_teams[i].displayData();
     }
+
+    if(model == nullptr)
+        model = new TeamsModel();
+    model->setTeams(m_teams); // potencjalnie nieoptymalnie
+    ui->scoresTable->setModel(model);
 }
 

@@ -41,3 +41,18 @@ QVariant TeamsModel::data(const QModelIndex& index, int role) const {
         break;
     }
 }
+
+QVariant TeamsModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    if (role == Qt::DisplayRole && orientation == Qt::Horizontal) {
+        switch (section) {
+            case 0: return "Nazwa zespołu";
+            case 1: return "Punkty";
+            case 2: return "Gole za";
+            case 3: return "Gole przeciw";
+            case 4: return "Zagranych meczy";
+            default: return QVariant();
+        }
+    }
+    return QVariant();
+}

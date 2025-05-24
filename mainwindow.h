@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "BusinessLogic/teams.h"
 #include <QVector>
+#include "BusinessLogic/teamsmodel.h"
          // include z biblioteki
 
 QT_BEGIN_NAMESPACE
@@ -21,8 +22,6 @@ private slots:
 
 
     void on_add_team_clicked();
-
-    void on_testButton_clicked();
     
     void on_add_match_clicked();
 
@@ -31,6 +30,7 @@ private:
 
     Ui::MainWindow *ui;
     QVector<Teams>  m_teams;
+    TeamsModel * model = nullptr;
 };
 
 #endif // MAINWINDOW_H
