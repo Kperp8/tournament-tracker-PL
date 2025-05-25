@@ -46,11 +46,16 @@ int Teams::getMatchesPlayed() const {
 
 void Teams::displayData() const
 {
-    qDebug() << "Drużyna:" << name
-             << "| Punkty:" << points
-             << "| Gole zdobyte:" << goalsFor
-             << "| Gole stracone:" << goalsAgainst
-             << "| Mecze:" << matchesPlayed;
+    qDebug() << ">> Drużyna:" << name
+             << ">> Punkty:" << points
+             << ">> Gole zdobyte:" << goalsFor
+             << ">> Gole stracone:" << goalsAgainst
+             << ">> Mecze:" << matchesPlayed;
 }
 
-//cd /c/Users/hugou/tournament-tracker-PL
+void Teams::setPoints(int p) { points = p; }
+void Teams::setGoalsFor(int g) { goalsFor = g; }
+void Teams::setGoalsAgainst(int g) { goalsAgainst = g; }
+void Teams::setMatchesPlayed(int m) { matchesPlayed = m; }
+
+

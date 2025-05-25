@@ -25,6 +25,10 @@ private slots:
     
     void on_add_match_clicked();
 
+    void on_Load_Button_clicked();
+
+    void on_Save_Button_clicked();
+
 private:
     void refreshCombos();
 

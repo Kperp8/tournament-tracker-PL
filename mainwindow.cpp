@@ -2,7 +2,10 @@
 #include "./ui_mainwindow.h"
 #include <QMessageBox>
 #include "BusinessLogic/teamsmodel.h"
+#include "BusinessLogic/file-handling.h"
 #include <QDebug>
+#include <QFileDialog>
+
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -100,5 +103,56 @@ void MainWindow::on_add_match_clicked()
         model = new TeamsModel();
     model->setTeams(m_teams); // potencjalnie nieoptymalnie
     ui->scoresTable->setModel(model);
+}
+
+
+void MainWindow::on_Load_Button_clicked()
+{
+    QString path = QFileDialog::getOpenFileName(
+        this,                       //QWidget *parent, to jakbys potrzebowal i chcial cos zmienic
+        "Wczytaj dane drużyn",          //const QString &caption,
+        "",                             //const QString &dir = QString(),
+        "Pliki tekstowe (*.txt)"            //const QString &filter = QString(), taki format mam osobiscie na windowsie
+        );
+
+    if (path.isEmpty()) return;
+
+    qDebug() << path;
+
+    QVector<Teams> loaded = FileOp::loadFromFile(path);
+    if (loaded.isEmpty()) {
+        QMessageBox::warning(this, "Błąd", "Nie udało się wczytać danych.");
+        return;
+    }
+
+    m_teams = loaded;
+    refreshCombos();
+    model->setTeams(m_teams);
+}
+
+
+void MainWindow::on_Save_Button_clicked()
+{
+    QString path = QFileDialog::getSaveFileName(
+        this,
+        "Zapisz dane drużyn",
+        "",
+        "Pliki tekstowe (*.txt);;Wszystkie pliki (*)"
+        );
+
+    if (path.isEmpty()) //czyli user zamknal okno, anulowal
+        return;
+
+    qDebug() << path;
+
+
+    bool zapisano = FileOp::saveToFile(m_teams, path);
+
+
+    if (zapisano) {
+        QMessageBox::information(this, "Sukces", "Zapisano dane do pliku.");
+    } else {
+        QMessageBox::critical(this, "Błąd", "Nie udało się zapisać danych do pliku.");
+    }
 }
 
