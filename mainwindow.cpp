@@ -2,7 +2,10 @@
 #include "./ui_mainwindow.h"
 #include <QMessageBox>
 #include "BusinessLogic/teamsmodel.h"
+#include "BusinessLogic/file-handling.h"
 #include <QDebug>
+#include <QFileDialog>
+
 
 
 MainWindow::MainWindow(QWidget *parent)
@@ -100,5 +103,28 @@ void MainWindow::on_add_match_clicked()
         model = new TeamsModel();
     model->setTeams(m_teams); // potencjalnie nieoptymalnie
     ui->scoresTable->setModel(model);
+}
+
+
+void MainWindow::on_Load_Button_clicked()
+{
+    QString path = QFileDialog::getOpenFileName(
+        this,                       //QWidget *parent, to jakbys potrzebowal i chcial cos zmienic
+        "Wczytaj dane drużyn",          //const QString &caption,
+        "tabela-ligowa",                             //const QString &dir = QString(),
+        "Pliki tekstowe (*.txt)"            //const QString &filter = QString(), taki format mam osobiscie na windowsie
+        );
+
+    if (path.isEmpty()) return;
+
+    QVector<Teams> loaded = FileOp::loadFromFile(path);
+    if (loaded.isEmpty()) {
+        QMessageBox::warning(this, "Błąd", "Nie udało się wczytać danych.");
+        return;
+    }
+
+    m_teams = loaded;
+    refreshCombos();
+    model->setTeams(m_teams);
 }
 

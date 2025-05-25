@@ -17,6 +17,11 @@ public:
     int getGoalsAgainst() const;
     int getMatchesPlayed() const;
     void displayData() const;
+    void setPoints(int p);
+    void setGoalsFor(int g);
+    void setGoalsAgainst(int g);
+    void setMatchesPlayed(int m);
+
 
 
 private:
