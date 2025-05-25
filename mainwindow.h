@@ -27,6 +27,8 @@ private slots:
 
     void on_Load_Button_clicked();
 
+    void on_Save_Button_clicked();
+
 private:
     void refreshCombos();
 

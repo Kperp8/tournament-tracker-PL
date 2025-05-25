@@ -111,11 +111,13 @@ void MainWindow::on_Load_Button_clicked()
     QString path = QFileDialog::getOpenFileName(
         this,                       //QWidget *parent, to jakbys potrzebowal i chcial cos zmienic
         "Wczytaj dane drużyn",          //const QString &caption,
-        "tabela-ligowa",                             //const QString &dir = QString(),
+        "",                             //const QString &dir = QString(),
         "Pliki tekstowe (*.txt)"            //const QString &filter = QString(), taki format mam osobiscie na windowsie
         );
 
     if (path.isEmpty()) return;
+
+    qDebug() << path;
 
     QVector<Teams> loaded = FileOp::loadFromFile(path);
     if (loaded.isEmpty()) {
@@ -126,5 +128,31 @@ void MainWindow::on_Load_Button_clicked()
     m_teams = loaded;
     refreshCombos();
     model->setTeams(m_teams);
+}
+
+
+void MainWindow::on_Save_Button_clicked()
+{
+    QString path = QFileDialog::getSaveFileName(
+        this,
+        "Zapisz dane drużyn",
+        "",
+        "Pliki tekstowe (*.txt);;Wszystkie pliki (*)"
+        );
+
+    if (path.isEmpty()) //czyli user zamknal okno, anulowal
+        return;
+
+    qDebug() << path;
+
+
+    bool zapisano = FileOp::saveToFile(m_teams, path);
+
+
+    if (zapisano) {
+        QMessageBox::information(this, "Sukces", "Zapisano dane do pliku.");
+    } else {
+        QMessageBox::critical(this, "Błąd", "Nie udało się zapisać danych do pliku.");
+    }
 }
 

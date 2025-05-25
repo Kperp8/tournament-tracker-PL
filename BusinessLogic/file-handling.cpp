@@ -41,6 +41,27 @@ QVector<Teams> FileOp::loadFromFile(const QString& path) //path przypisujemy w m
     return teams;
 }
 
+bool FileOp::saveToFile(const QVector<Teams>& teams, const QString& path)
+{
+    QFile file(path);
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        qDebug() << "Nie można otworzyć pliku do zapisu:" << path;
+        return false;
+    }
+
+    QTextStream out(&file);
+    for (int i = 0; i < teams.size(); i++) {
+        out << teams[i].getName() << ","
+            << teams[i].getPoints() << ","
+            << teams[i].getGoalsFor() << ","
+            << teams[i].getGoalsAgainst() << ","
+            << teams[i].getMatchesPlayed() << "\n";
+    }
+
+    file.close();
+    return true;
+}
+
 //dla czytania mozesz skopiowac:
 /*
 FCB,9,12,4,3
