@@ -61,8 +61,13 @@ void MainWindow::on_add_team_clicked()
 
 void MainWindow::refreshCombos()
 {
-    ui->tournamentList->clear();
-    ui->tournamentList->addItems(tournaments.keys());
+    for(auto it = tournaments.begin(); it!=tournaments.end(); ++it)
+    {
+        if(ui->tournamentList->findText(it.key()) == -1)
+        {
+            ui->tournamentList->addItem(it.key());
+        }
+    }
     ui->select_A->clear();
     ui->select_B->clear();
     for (int i = 0; i < m_teams.size(); ++i)
@@ -175,8 +180,9 @@ void MainWindow::on_tournamentList_currentTextChanged(const QString &arg1)
 {
     currentTourName = arg1;
     m_teams = tournaments[currentTourName];
+    if(model == nullptr)
+        model = new TeamsModel();
     model->setTeams(m_teams); // potencjalnie nieoptymalnie
     ui->scoresTable->setModel(model);
-    refreshCombos();
 }
 
