@@ -31,12 +31,16 @@ private slots:
 
     void on_Save_Button_clicked();
 
+    void on_actionDodaj_turniej_triggered();
+
+    void on_tournamentList_currentTextChanged(const QString &arg1);
+
 private:
     void refreshCombos();
 
     Ui::MainWindow *ui;
     QHash<QString, QVector<Teams>> tournaments; // hash mapa na wszystkie turnieje
-    QString tournamentName; // nazwa obecnego turnieju
+    QString currentTourName; // nazwa obecnego turnieju
     QVector<Teams>  m_teams;
     TeamsModel * model = nullptr;
 };

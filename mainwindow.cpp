@@ -17,8 +17,9 @@ MainWindow::MainWindow(QWidget *parent)
     model = new TeamsModel();
     ui->scoresTable->setModel(model); // dzięki temu tabela zawsze będzie mieć kolumny, nawet zanim dodamy zespoły
     ui->scoresTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch); // dzięki temu kolumny tabeli skalują się do okna
-    tournamentName = QInputDialog::getText(this, "Podaj nazwe turnieju", "Nazwa:", QLineEdit::Normal, "");
-    tournaments[tournamentName] = m_teams;
+    currentTourName = QInputDialog::getText(this, "Podaj nazwe turnieju", "Nazwa:", QLineEdit::Normal, "");
+    tournaments[currentTourName] = m_teams;
+    refreshCombos();
 }
 
 MainWindow::~MainWindow() { delete ui; }
@@ -60,6 +61,8 @@ void MainWindow::on_add_team_clicked()
 
 void MainWindow::refreshCombos()
 {
+    ui->tournamentList->clear();
+    ui->tournamentList->addItems(tournaments.keys());
     ui->select_A->clear();
     ui->select_B->clear();
     for (int i = 0; i < m_teams.size(); ++i)
@@ -67,8 +70,6 @@ void MainWindow::refreshCombos()
         ui->select_A->addItem(m_teams[i].getName());
         ui->select_B->addItem(m_teams[i].getName());
     }
-    ui->tournamentList->clear();
-    ui->tournamentList->addItems(tournaments.keys());
 }
 
 void MainWindow::on_add_match_clicked()
@@ -159,5 +160,23 @@ void MainWindow::on_Save_Button_clicked()
     } else {
         QMessageBox::critical(this, "Błąd", "Nie udało się zapisać danych do pliku.");
     }
+}
+
+
+void MainWindow::on_actionDodaj_turniej_triggered()
+{
+    QString name = QInputDialog::getText(this, "Dodawanie turnieju", "Nazwa nowego turnieju:", QLineEdit::Normal, "");
+    tournaments[name] = QList<Teams>();
+    refreshCombos();
+}
+
+
+void MainWindow::on_tournamentList_currentTextChanged(const QString &arg1)
+{
+    currentTourName = arg1;
+    m_teams = tournaments[currentTourName];
+    model->setTeams(m_teams); // potencjalnie nieoptymalnie
+    ui->scoresTable->setModel(model);
+    refreshCombos();
 }
 
