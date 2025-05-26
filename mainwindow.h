@@ -5,6 +5,7 @@
 #include "BusinessLogic/teams.h"
 #include <QVector>
 #include "BusinessLogic/teamsmodel.h"
+#include "BusinessLogic/extended-teams.h"
          // include z biblioteki
 
 QT_BEGIN_NAMESPACE
@@ -28,6 +29,8 @@ private slots:
     void on_Load_Button_clicked();
 
     void on_Save_Button_clicked();
+
+    void on_Zaawansowane_CheckBox_stateChanged(int arg1);
 
 private:
     void refreshCombos();

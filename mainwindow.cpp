@@ -3,19 +3,22 @@
 #include <QMessageBox>
 #include "BusinessLogic/teamsmodel.h"
 #include "BusinessLogic/file-handling.h"
+#include "BusinessLogic/extended-teams.h"
 #include <QDebug>
 #include <QFileDialog>
+#include <QCheckBox>
 
 
 
-MainWindow::MainWindow(QWidget *parent)
-    : QMainWindow(parent)
-    , ui(new Ui::MainWindow)
+MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     model = new TeamsModel();
     ui->scoresTable->setModel(model); // dzięki temu tabela zawsze będzie mieć kolumny, nawet zanim dodamy zespoły
     ui->scoresTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch); // dzięki temu kolumny tabeli skalują się do okna
+    ui->formWidget_A->setEnabled(false);
+    ui->formWidget_B->setEnabled(false);
+    ui->Zaawansowane_CheckBox->setChecked(false);
 }
 
 MainWindow::~MainWindow() { delete ui; }
@@ -94,6 +97,43 @@ void MainWindow::on_add_match_clicked()
 
     qDebug() << "Mecz dodany:" << teamAName << goalsA << "-" << goalsB << teamBName;
 
+    if (ui->Zaawansowane_CheckBox->isChecked())
+    {
+        ExtendedTeams* extA = new ExtendedTeams(teamAName);
+
+        QStringList alist = ui->Strzelcy_A->text().split(",", Qt::SkipEmptyParts);
+        for (int i = 0; i < alist.size(); i++)
+            alist[i] = alist[i].trimmed(); // usuwamy spacje
+        extA->setStrzelcy(alist);
+
+        extA->setZaawansowane(
+            ui->Lp_A->text().toInt(),
+            ui->PosP_A->text().toInt(),
+            ui->RzutR_A->text().toInt(),
+            ui->StrzNBr_A->text().toInt(),
+            ui->OczGol_A->text().toInt(),
+            ui->StrzL_A->text().toInt()
+            );
+
+        ExtendedTeams* extB = new ExtendedTeams(teamBName);
+
+        QStringList blist = ui->Strzelcy_A->text().split(",", Qt::SkipEmptyParts);
+        for (int i = 0; i < blist.size(); i++)
+            blist[i] = blist[i].trimmed(); // usuwamy spacje
+        extA->setStrzelcy(blist);
+
+        extA->setZaawansowane(
+            ui->Lp_B->text().toInt(),
+            ui->PosP_B->text().toInt(),
+            ui->RzutR_B->text().toInt(),
+            ui->StrzNBr_B->text().toInt(),
+            ui->OczGol_B->text().toInt(),
+            ui->StrzL_B->text().toInt()
+            );
+        // Możesz zapisać gdzieś te dane np. do QVector<ExtendedTeam>
+    }
+
+
     for(int i = 0; i < m_teams.size(); ++i)
     {
         m_teams[i].displayData();
@@ -154,5 +194,13 @@ void MainWindow::on_Save_Button_clicked()
     } else {
         QMessageBox::critical(this, "Błąd", "Nie udało się zapisać danych do pliku.");
     }
+}
+
+
+void MainWindow::on_Zaawansowane_CheckBox_stateChanged(int arg1)
+{
+    bool zaznaczony = (arg1 == Qt::Checked);
+    ui->formWidget_A->setEnabled(zaznaczony); //uzylem setEnabled zamiast setVisible żeby layout zawsze byl ten sam
+    ui->formWidget_B->setEnabled(zaznaczony);   //setEnabled(false) == zaciemnione komorki
 }
 

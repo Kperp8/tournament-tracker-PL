@@ -19,6 +19,8 @@ add_library(BusinessLogic SHARED
   teamsmodel.cpp
   file-handling.cpp
   file-handling.h
+  extended-teams.h
+  extended-teams.cpp
 )
 
 target_link_libraries(BusinessLogic PRIVATE Qt${QT_VERSION_MAJOR}::Core)
