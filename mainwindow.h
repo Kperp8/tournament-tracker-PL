@@ -5,6 +5,8 @@
 #include "BusinessLogic/teams.h"
 #include <QVector>
 #include "BusinessLogic/teamsmodel.h"
+#include <QHash>
+#include <QString>
          // include z biblioteki
 
 QT_BEGIN_NAMESPACE
@@ -33,6 +35,8 @@ private:
     void refreshCombos();
 
     Ui::MainWindow *ui;
+    QHash<QString, QVector<Teams>> tournaments; // hash mapa na wszystkie turnieje
+    QString tournamentName; // nazwa obecnego turnieju
     QVector<Teams>  m_teams;
     TeamsModel * model = nullptr;
 };

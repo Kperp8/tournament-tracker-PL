@@ -16,6 +16,9 @@
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_2">
     <item>
+     <widget class="QComboBox" name="tournamentList"/>
+    </item>
+    <item>
      <widget class="QTableView" name="scoresTable"/>
     </item>
     <item>
@@ -87,11 +90,23 @@
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>25</height>
+     <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuTurniej">
+    <property name="title">
+     <string>Turniej</string>
+    </property>
+    <addaction name="actionDodaj_turniej"/>
+   </widget>
+   <addaction name="menuTurniej"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionDodaj_turniej">
+   <property name="text">
+    <string>Dodaj turniej</string>
+   </property>
+  </action>
  </widget>
  <resources/>
  <connections/>

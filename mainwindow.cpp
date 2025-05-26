@@ -5,6 +5,7 @@
 #include "BusinessLogic/file-handling.h"
 #include <QDebug>
 #include <QFileDialog>
+#include <QInputDialog>
 
 
 
@@ -16,6 +17,8 @@ MainWindow::MainWindow(QWidget *parent)
     model = new TeamsModel();
     ui->scoresTable->setModel(model); // dzięki temu tabela zawsze będzie mieć kolumny, nawet zanim dodamy zespoły
     ui->scoresTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch); // dzięki temu kolumny tabeli skalują się do okna
+    tournamentName = QInputDialog::getText(this, "Podaj nazwe turnieju", "Nazwa:", QLineEdit::Normal, "");
+    tournaments[tournamentName] = m_teams;
 }
 
 MainWindow::~MainWindow() { delete ui; }
@@ -64,6 +67,8 @@ void MainWindow::refreshCombos()
         ui->select_A->addItem(m_teams[i].getName());
         ui->select_B->addItem(m_teams[i].getName());
     }
+    ui->tournamentList->clear();
+    ui->tournamentList->addItems(tournaments.keys());
 }
 
 void MainWindow::on_add_match_clicked()
