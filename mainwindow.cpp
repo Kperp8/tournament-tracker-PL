@@ -178,11 +178,13 @@ void MainWindow::on_actionDodaj_turniej_triggered()
 
 void MainWindow::on_tournamentList_currentTextChanged(const QString &arg1)
 {
+    tournaments[currentTourName] = m_teams;
     currentTourName = arg1;
     m_teams = tournaments[currentTourName];
     if(model == nullptr)
         model = new TeamsModel();
     model->setTeams(m_teams); // potencjalnie nieoptymalnie
     ui->scoresTable->setModel(model);
+    refreshCombos();
 }
 
