@@ -10,7 +10,7 @@ QVector<Teams> FileOp::loadFromFile(const QString& path) //path przypisujemy w m
 {
     QVector<Teams> teams;
     QFile file(path);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) { //QIODevice::Text czytamy QStrings nie bajty
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) { //QTextStream czytamy QStrings nie bajty, nie wiem czy forcowac konkretny encoding
         qDebug() << "Nie można otworzyć pliku do odczytu:" << path;
         return teams;
     }
@@ -18,8 +18,8 @@ QVector<Teams> FileOp::loadFromFile(const QString& path) //path przypisujemy w m
     QTextStream in(&file);
     while (!in.atEnd()) {
         QString line = in.readLine();           //https://doc.qt.io/qt-6/qfile.html
-        QStringList parts = line.split(",");
-        if (parts.size() != 5)
+        QStringList parts = line.split(",");    // FCB,7,4,2,3
+        if (parts.size() != 5)                  // MAN UTD,5,2,4,5 itd..
             continue;
 
         QString name = parts[0];
