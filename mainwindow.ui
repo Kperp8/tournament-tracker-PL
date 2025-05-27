@@ -186,6 +186,13 @@
            </widget>
           </item>
           <item>
+           <widget class="QPushButton" name="edytuj_A">
+            <property name="text">
+             <string>Edytuj</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="verticalSpacer">
             <property name="orientation">
              <enum>Qt::Orientation::Vertical</enum>
@@ -395,6 +402,13 @@
            <widget class="QPushButton" name="details_B">
             <property name="text">
              <string>Szczegóły</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="edytuj_B">
+            <property name="text">
+             <string>Edytuj</string>
             </property>
            </widget>
           </item>

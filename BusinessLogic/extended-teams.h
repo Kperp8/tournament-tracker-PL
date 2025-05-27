@@ -8,36 +8,38 @@
 #include <QtMath>
 #include <QtMath>
 
-/**  Drużyna z pełną historią meczów + zaawansowane metryki  */
+
 class BUSINESSLOGIC_EXPORT ExtendedTeams : public Teams
 {
 public:
     explicit ExtendedTeams(const QString& name = "");
 
-    // -- zapisywanie nowego meczu ---------------------------------
+
     void addMatch(const MatchStats& m);
 
-    // -- dostęp tylko-do-odczytu ----------------------------------
+
     const QVector<MatchStats>& matches() const { return m_matches; }
     int  matchCount()           const { return m_matches.size();   }
 
-    // -- zagregowane statystyki sezonu ----------------------------
-    double goalsPerMatch()        const;    // średnia goli
-    double shootingAccuracy()     const;    // % strzałów celnych
-    double expectedGoalsAccuracy() const;   // „przewidywalność” (xG vs gole) %
-    QString topScorer()           const;    // nazwisko + liczba bramek
+
+    double goalsPerMatch()        const;
+    double shootingAccuracy()     const;
+    double expectedGoalsAccuracy() const;
+    QString topScorer()           const;
+    void setName(const QString & name) override;
 
 private:
-    // pomocnik – rozkład Poissona
+
     static double poissonProb(double lambda, int k);
 
-    // --- DANE ----------------------------------------------------
+
     QVector<MatchStats> m_matches;
 
     int totalShotsOnTarget = 0;
     int totalShots         = 0;
     int totalExpectedG     = 0;
-    QVector<QPair<QString, int>> m_scorers;
+    QVector<QPair<QString, int>> m_scorers; //czyli vector, ktory przechowuje mapowania (strzelec, liczba goli)
+    //
 };
 
 #endif // EXTENDED_TEAMS_H

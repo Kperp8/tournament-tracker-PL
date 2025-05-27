@@ -60,13 +60,13 @@ void MainWindow::on_add_team_clicked()
 
 ExtendedTeams* MainWindow::getOrCreateExt(const QString& name)
 {
-    for (int i = 0; i < m_advTeams.size(); ++i)
+    for (int i = 0; i < m_advTeams.size(); ++i)     //QVector<ExtendedTeams*>  m_advTeams - jest w definicji mainwindow.h
     {
-        if (m_advTeams[i]->getName() == name)
+        if (m_advTeams[i]->getName() == name)       //szukamy czy juz istnieje taka druzyne w extended klasie
             return m_advTeams[i];
     }
 
-    ExtendedTeams* t = new ExtendedTeams(name);
+    ExtendedTeams* t = new ExtendedTeams(name);     //jak nie tworzymy nowa
     m_advTeams.append(t);
     return t;
 }
@@ -110,9 +110,9 @@ void MainWindow::on_add_match_clicked()
 
     qDebug() << "Mecz dodany:" << teamAName << goalsA << "-" << goalsB << teamBName;
 
-    if (ui->Zaawansowane_CheckBox->isChecked())
+    if (ui->Zaawansowane_CheckBox->isChecked()) //if zaawansowane jest zaznaczone
     {
-        MatchStats msA;
+        MatchStats msA; //tworzymy nowy obiekt struktury; naglowki ida tak: match-specify.h ->extended-teams.h->mainwindow.h
         msA.date        = QDate::currentDate();
         msA.goalsFor    = goalsA;
         msA.goalsAg     = goalsB;
@@ -123,6 +123,14 @@ void MainWindow::on_add_match_clicked()
 
         getOrCreateExt(teamAName)->addMatch(msA);
 
+        /* ten nowo utowrzony, badz znaleziony obiekt wskazujemy na metode addMatch,
+         * ktora jak widzisz w parametrach bierze obiekt struktury, ten obiekt z wszystkimi jego wartosciami
+         * zostanie dodany do wektora w prywatnym polu ExtendedTeams - czyli bedziemy mieli log z wszystkimi
+         * meczami (w ktorych zaznaczyles zaawansowane)dla tej druzyny. Jak zobaczysz w implementacje addMatch,
+         *  to zauwazysz ze pelni ona niejako
+         * role konstruktora sparametryzowanego
+
+        */
 
         MatchStats msB;
         msB.date        = QDate::currentDate();
@@ -218,7 +226,7 @@ void MainWindow::on_details_A_clicked()
     {
         if (m_advTeams[i]->getName() == name)
         {
-            Details dlg(m_advTeams[i], this);
+            Details dlg(m_advTeams[i], this); //idz do konstruktora w details.cpp
             dlg.exec();
             return;
         }
@@ -318,5 +326,37 @@ void MainWindow::on_DEMO_clicked()
     getOrCreateExt(teamBName)->addMatch(msB);
 
     model->setTeams(m_teams);
+}
+
+
+void MainWindow::on_edytuj_A_clicked()
+{
+    QString name = ui->select_A->currentText();
+
+    if (name.isEmpty())
+        return;
+
+    Edytuj dlg(name, this);
+    if(dlg.exec() == QDialog::Accepted)
+    {
+        QString NewName = dlg.GetNewName();
+
+        if(NewName.isEmpty() || NewName == name) return;
+
+        for (Teams& t: m_teams)
+            if(t.getName() == name)
+                t.setName(NewName);
+
+        for (ExtendedTeams* ex: m_advTeams)
+            if(ex->getName() == name)
+                ex->setName(NewName);
+
+        refreshCombos();
+        model->setTeams(m_teams);
+
+    }
+
+
+
 }
 

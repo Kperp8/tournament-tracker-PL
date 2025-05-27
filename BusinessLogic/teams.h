@@ -23,6 +23,8 @@ public:
 
     virtual void displayData() const;
 
+    virtual void setName(const QString & name);
+
 
 
 private:
