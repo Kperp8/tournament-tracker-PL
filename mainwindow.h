@@ -35,7 +35,7 @@ private slots:
 
     void on_Zaawansowane_CheckBox_stateChanged(int arg1);
 
-    void on_details_A_clicked();
+    void on_details_clicked();
 
     void on_DEMO_clicked();
 

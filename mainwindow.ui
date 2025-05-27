@@ -179,13 +179,6 @@
            <widget class="QComboBox" name="select_A"/>
           </item>
           <item>
-           <widget class="QPushButton" name="details_A">
-            <property name="text">
-             <string>Szczegóły</string>
-            </property>
-           </widget>
-          </item>
-          <item>
            <widget class="QPushButton" name="edytuj_A">
             <property name="text">
              <string>Edytuj</string>
@@ -221,7 +214,7 @@
          </spacer>
         </item>
         <item>
-         <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,0,0,0,0,0,0,0,0">
+         <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0,0,0,0,0,0,0,0,0,0">
           <item>
            <spacer name="verticalSpacer_8">
             <property name="orientation">
@@ -279,6 +272,13 @@
            <widget class="QPushButton" name="DEMO">
             <property name="text">
              <string>DEMO</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="details">
+            <property name="text">
+             <string>Szczegóły</string>
             </property>
            </widget>
           </item>
@@ -397,13 +397,6 @@
           </item>
           <item>
            <widget class="QComboBox" name="select_B"/>
-          </item>
-          <item>
-           <widget class="QPushButton" name="details_B">
-            <property name="text">
-             <string>Szczegóły</string>
-            </property>
-           </widget>
           </item>
           <item>
            <widget class="QPushButton" name="edytuj_B">

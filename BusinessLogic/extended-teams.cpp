@@ -57,17 +57,24 @@ double ExtendedTeams::shootingAccuracy() const
 double ExtendedTeams::poissonProb(double lambda, int k)
 {
     if (lambda <= 0.0) return 0.0;
-    return qExp(-lambda) * qPow(lambda, k) / tgamma(k + 1); //gamma to silnia
+    return qExp(-lambda) * qPow(lambda, k) / tgamma(k + 1); //gamma to silnia. to jest zwykly rozklad poissona z rpis kol 1
 }
 
 double ExtendedTeams::expectedGoalsAccuracy() const
 {
-    if (!getMatchesPlayed() || totalExpectedG == 0) return 0.0;
+    if (m_matches.isEmpty()) return 0.0;
 
-    const double lambda = static_cast<double>(totalExpectedG) / getMatchesPlayed();
-    const int    k      = qRound(goalsPerMatch());
+    double wynik = 0;
+    for(int i = 0; i < getMatchesPlayed(); i++)
+    {
+        double lambda = m_matches[i].expectedG;
+        double k = m_matches[i].goalsFor;
+        wynik += poissonProb(lambda, k);
+    }
 
-    return 100.0 * poissonProb(lambda, k);  // w %
+
+
+    return 100.0 * wynik / m_matches.size();  // w %
 }
 
 QString ExtendedTeams::topScorer() const

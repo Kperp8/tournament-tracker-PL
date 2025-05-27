@@ -217,24 +217,33 @@ void MainWindow::on_Zaawansowane_CheckBox_stateChanged(int arg1)
 }
 
 
-void MainWindow::on_details_A_clicked()
+void MainWindow::on_details_clicked()
 {
-    const QString name = ui->select_A->currentText();
+    const QString nameA = ui->select_A->currentText();
+    const QString nameB = ui->select_B->currentText();
+
+    int indexA = -1;
+    int indexB = -1;
 
     // Szukamy drużyny rozszerzonej po nazwie
     for (int i = 0; i < m_advTeams.size(); ++i)
     {
-        if (m_advTeams[i]->getName() == name)
-        {
-            Details dlg(m_advTeams[i], this); //idz do konstruktora w details.cpp
-            dlg.exec();
-            return;
-        }
+        if (m_advTeams[i]->getName() == nameA) indexA = i;
+        if (m_advTeams[i]->getName() == nameB) indexB = i;
     }
 
-    QMessageBox::information(this,
-                             "Brak danych",
-                             "Ta drużyna nie ma jeszcze zaawansowanych statystyk.");
+    if (indexA == -1 || indexB == -1)
+    {
+        QMessageBox::information(this,
+                                 "Brak danych",
+                                 "Przynajmniej jedna z drużyn nie posiada danych zaawansowanych.");
+    }
+
+    Details dlg(m_advTeams[indexA],m_advTeams[indexB], this); //idz do konstruktora w details.cpp
+    dlg.exec();
+    return;
+
+
 
 
 }
@@ -257,6 +266,9 @@ void MainWindow::on_DEMO_clicked()
     };
 
     // --- LOSOWANIE DANYCH DLA DRUŻYNY A -------------------------
+    int RzutRA      = QRandomGenerator::global()->bounded(0,10);
+    int LiczbPA     = QRandomGenerator::global()->bounded(211,390);
+    int PosesjaA    = QRandomGenerator::global()->bounded(0,100);
     int goalsA      = QRandomGenerator::global()->bounded(0, 5);   // 0–4 gole
     int shotsA      = QRandomGenerator::global()->bounded(5, 16);  // 5–15 strzałów
     int onTargetA   = QRandomGenerator::global()->bounded(2, qMin(shotsA, 9) + 1); // max celnych = shotsA
@@ -264,6 +276,9 @@ void MainWindow::on_DEMO_clicked()
     QStringList scorersA = losujStrzelcow(goalsA);
 
     // --- LOSOWANIE DLA DRUŻYNY B -------------------------------
+    int RzutRB      = QRandomGenerator::global()->bounded(0,10);
+    int LiczbPB      = QRandomGenerator::global()->bounded(211,390);
+    int PosesjaB   = QRandomGenerator::global()->bounded(PosesjaA,100);
     int goalsB      = QRandomGenerator::global()->bounded(0, 5);
     int shotsB      = QRandomGenerator::global()->bounded(5, 16);
     int onTargetB   = QRandomGenerator::global()->bounded(2, qMin(shotsB, 9) + 1);
@@ -274,58 +289,27 @@ void MainWindow::on_DEMO_clicked()
     ui->spinBox_A->setValue(goalsA);
     ui->spinBox_B->setValue(goalsB);
 
+
+    ui->Lp_A->setText(QString::number(LiczbPA));
+    ui->RzutR_A->setText(QString::number(RzutRA));
+    ui->PosP_A->setText(QString::number(PosesjaA));
     ui->StrzL_A->setText(QString::number(shotsA));
     ui->StrzNBr_A->setText(QString::number(onTargetA));
     ui->OczGol_A->setText(QString::number(xGA));
     ui->Strzelcy_A->setText(scorersA.join(", "));
 
+
+    ui->Lp_B->setText(QString::number(LiczbPB));
+    ui->RzutR_B->setText(QString::number(RzutRB));
+    ui->PosP_B->setText(QString::number(PosesjaB));
     ui->StrzL_B->setText(QString::number(shotsB));
     ui->StrzNBr_B->setText(QString::number(onTargetB));
     ui->OczGol_B->setText(QString::number(xGB));
     ui->Strzelcy_B->setText(scorersB.join(", "));
 
-    // --- ZAPIS DO MODELÓW -------------------------------------
-    const QString teamAName = ui->select_A->currentText();
-    const QString teamBName = ui->select_B->currentText();
-
-    int idxA = -1, idxB = -1;
-    for (int i = 0; i < m_teams.size(); ++i) {
-        if (m_teams[i].getName() == teamAName) idxA = i;
-        if (m_teams[i].getName() == teamBName) idxB = i;
-    }
-
-    if (idxA < 0 || idxB < 0 || idxA == idxB) {
-        QMessageBox::warning(this, "Błąd", "Wybierz poprawne dwie różne drużyny.");
-        return;
-    }
 
     // --- DOMYŚLNE DANE ----------------------------------------
-    m_teams[idxA].addMatch(goalsA, goalsB);
-    m_teams[idxB].addMatch(goalsB, goalsA);
 
-    // --- ZAawansowane -----------------------------------------
-    MatchStats msA;
-    msA.date        = QDate::currentDate();
-    msA.goalsFor    = goalsA;
-    msA.goalsAg     = goalsB;
-    msA.shotsOnTgt  = onTargetA;
-    msA.shotsTot    = shotsA;
-    msA.expectedG   = xGA;
-    msA.scorers     = scorersA;
-
-    MatchStats msB;
-    msB.date        = QDate::currentDate();
-    msB.goalsFor    = goalsB;
-    msB.goalsAg     = goalsA;
-    msB.shotsOnTgt  = onTargetB;
-    msB.shotsTot    = shotsB;
-    msB.expectedG   = xGB;
-    msB.scorers     = scorersB;
-
-    getOrCreateExt(teamAName)->addMatch(msA);
-    getOrCreateExt(teamBName)->addMatch(msB);
-
-    model->setTeams(m_teams);
 }
 
 

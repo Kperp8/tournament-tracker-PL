@@ -12,12 +12,13 @@ class Details : public QDialog
     Q_OBJECT
 
 public:
-    explicit Details(const ExtendedTeams* team, QWidget *parent = nullptr);
+    explicit Details(const ExtendedTeams* teamA, const ExtendedTeams* teamB, QWidget *parent = nullptr);
     ~Details();
 
 private:
     Ui::Details *ui;
-    const ExtendedTeams* dm_team = nullptr;
+    const ExtendedTeams* dA_team = nullptr;
+    const ExtendedTeams* dB_team = nullptr;
 };
 
 #endif // DETAILS_H
