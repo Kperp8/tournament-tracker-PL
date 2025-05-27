@@ -57,5 +57,6 @@ void Teams::setPoints(int p) { points = p; }
 void Teams::setGoalsFor(int g) { goalsFor = g; }
 void Teams::setGoalsAgainst(int g) { goalsAgainst = g; }
 void Teams::setMatchesPlayed(int m) { matchesPlayed = m; }
+void Teams::setName(const QString & name) {this->name = name;};
 
 
