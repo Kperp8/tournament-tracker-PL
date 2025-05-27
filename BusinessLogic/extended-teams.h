@@ -1,39 +1,43 @@
 #ifndef EXTENDED_TEAMS_H
 #define EXTENDED_TEAMS_H
-#include <QStringList>
-#include "teams.h"
 
+#include "teams.h"
+#include "match-specify.h"
+#include <QVector>
+#include <QHash>
+#include <QtMath>
+#include <QtMath>
+
+/**  Drużyna z pełną historią meczów + zaawansowane metryki  */
 class BUSINESSLOGIC_EXPORT ExtendedTeams : public Teams
 {
-private:
-    QStringList strzelcy;
-    int podania = 0;
-    int posesja = 0;
-    int rzuty_r = 0;
-    int strzaly_c = 0;
-    int oczekiwane_g = 0;
-    int laczne_s = 0;
 public:
+    explicit ExtendedTeams(const QString& name = "");
 
-    ExtendedTeams(const QString &name = "");
+    // -- zapisywanie nowego meczu ---------------------------------
+    void addMatch(const MatchStats& m);
 
-    void setStrzelcy(const QStringList& s);
-    void setZaawansowane(int podania, int posesja, int rzuty_r, int strzaly_c, int oczekiwane_g, int laczne_s);
+    // -- dostęp tylko-do-odczytu ----------------------------------
+    const QVector<MatchStats>& matches() const { return m_matches; }
+    int  matchCount()           const { return m_matches.size();   }
 
-    QStringList getStrzelcy() const;
-    int getPodania() const;
-    int getPosesja() const;
-    int getRzuty_r() const;
-    int getStrzaly_c() const;
-    int getOczekiwane_g() const;
-    int getLaczne_s() const;
+    // -- zagregowane statystyki sezonu ----------------------------
+    double goalsPerMatch()        const;    // średnia goli
+    double shootingAccuracy()     const;    // % strzałów celnych
+    double expectedGoalsAccuracy() const;   // „przewidywalność” (xG vs gole) %
+    QString topScorer()           const;    // nazwisko + liczba bramek
 
-    void displayData() const override;
+private:
+    // pomocnik – rozkład Poissona
+    static double poissonProb(double lambda, int k);
 
+    // --- DANE ----------------------------------------------------
+    QVector<MatchStats> m_matches;
 
-
-
-
+    int totalShotsOnTarget = 0;
+    int totalShots         = 0;
+    int totalExpectedG     = 0;
+    QVector<QPair<QString, int>> m_scorers;
 };
 
 #endif // EXTENDED_TEAMS_H

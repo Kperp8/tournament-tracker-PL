@@ -6,6 +6,8 @@
 #include <QVector>
 #include "BusinessLogic/teamsmodel.h"
 #include "BusinessLogic/extended-teams.h"
+#include "details.h"
+#include <QRandomGenerator>
          // include z biblioteki
 
 QT_BEGIN_NAMESPACE
@@ -32,12 +34,18 @@ private slots:
 
     void on_Zaawansowane_CheckBox_stateChanged(int arg1);
 
+    void on_details_A_clicked();
+
+    void on_DEMO_clicked();
+
 private:
     void refreshCombos();
+    ExtendedTeams* getOrCreateExt(const QString& name);
 
     Ui::MainWindow *ui;
     QVector<Teams>  m_teams;
     TeamsModel * model = nullptr;
+    QVector<ExtendedTeams*>   m_advTeams;
 };
 
 #endif // MAINWINDOW_H
