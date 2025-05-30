@@ -13,7 +13,11 @@ struct MatchStats
     int          shotsOnTgt = 0;
     int          shotsTot   = 0;
     int          expectedG  = 0;
+    int          corners    = 0;
+    int          possesion  = 0;
+    int          passes     = 0;
     QStringList  scorers;
+    bool ustawienia_zaawansowane = false;
 };
 
 

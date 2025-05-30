@@ -41,6 +41,8 @@ private slots:
 
     void on_edytuj_A_clicked();
 
+    void on_edytuj_B_clicked();
+
 private:
     void refreshCombos();
     ExtendedTeams* getOrCreateExt(const QString& name);
