@@ -339,8 +339,32 @@ void MainWindow::on_edytuj_A_clicked()
         model->setTeams(m_teams);
 
     }
+}
 
 
 
+void MainWindow::on_edytuj_B_clicked()
+{
+    QString name = ui->select_B->currentText();
+    if (name.isEmpty()) return;
+
+    Edytuj dlg(name, this);
+    if (dlg.exec() == QDialog::Accepted)
+    {
+        QString newName = dlg.GetNewName();
+        if (!newName.isEmpty() && newName != name)
+        {
+            for (Teams& t : m_teams)
+                if (t.getName() == name)
+                    t.setName(newName);
+
+            for (ExtendedTeams* et : m_advTeams)
+                if (et->getName() == name)
+                    et->setName(newName);
+
+            refreshCombos();
+            model->setTeams(m_teams);
+        }
+    }
 }
 
