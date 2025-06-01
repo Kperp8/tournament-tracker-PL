@@ -3,6 +3,7 @@
 #include <QMessageBox>
 #include "BusinessLogic/teamsmodel.h"
 #include "BusinessLogic/file-handling.h"
+#include "BusinessLogic/teams.h"
 #include "BusinessLogic/extended-teams.h"
 #include <QDebug>
 #include <QFileDialog>
@@ -118,46 +119,49 @@ void MainWindow::on_add_match_clicked()
         return;
     }
 
-    m_teams[indexA].addMatch(goalsA, goalsB);
-    m_teams[indexB].addMatch(goalsB, goalsA);
+    MatchStats msA;
+    msA.date = QDate::currentDate();
+    msA.goalsFor = goalsA;
+    msA.goalsAg  = goalsB;
 
-    qDebug() << "Mecz dodany:" << teamAName << goalsA << "-" << goalsB << teamBName;
+    MatchStats msB;
+    msB.date = QDate::currentDate();
+    msB.goalsFor = goalsB;
+    msB.goalsAg  = goalsA;
 
-    if (ui->Zaawansowane_CheckBox->isChecked()) //if zaawansowane jest zaznaczone
+    m_teams[indexA].addMatch(msA);
+    m_teams[indexB].addMatch(msB);
+
+    if (ui->Zaawansowane_CheckBox->isChecked())
     {
-        MatchStats msA; //tworzymy nowy obiekt struktury; naglowki ida tak: match-specify.h ->extended-teams.h->mainwindow.h
-        msA.date        = QDate::currentDate();
-        msA.goalsFor    = goalsA;
-        msA.goalsAg     = goalsB;
         msA.shotsOnTgt  = ui->StrzNBr_A->text().toInt();
         msA.shotsTot    = ui->StrzL_A->text().toInt();
         msA.expectedG   = ui->OczGol_A->text().toInt();
+        msA.corners     = ui->RzutR_A->text().toInt();
+        msA.passes      = ui->Lp_A->text().toInt();
+        msA.possesion   = ui->PosP_A->text().toInt();
         msA.scorers     = ui->Strzelcy_A->text().split(",", Qt::SkipEmptyParts);
+        msA.ustawienia_zaawansowane = true;
 
-        getOrCreateExt(teamAName)->addMatch(msA);
 
-        /* ten nowo utowrzony, badz znaleziony obiekt wskazujemy na metode addMatch,
-         * ktora jak widzisz w parametrach bierze obiekt struktury, ten obiekt z wszystkimi jego wartosciami
-         * zostanie dodany do wektora w prywatnym polu ExtendedTeams - czyli bedziemy mieli log z wszystkimi
-         * meczami (w ktorych zaznaczyles zaawansowane)dla tej druzyny. Jak zobaczysz w implementacje addMatch,
-         *  to zauwazysz ze pelni ona niejako
-         * role konstruktora sparametryzowanego
-
-        */
-
-        MatchStats msB;
-        msB.date        = QDate::currentDate();
-        msB.goalsFor    = goalsB;
-        msB.goalsAg     = goalsA;
         msB.shotsOnTgt  = ui->StrzNBr_B->text().toInt();
         msB.shotsTot    = ui->StrzL_B->text().toInt();
         msB.expectedG   = ui->OczGol_B->text().toInt();
+        msB.corners     = ui->RzutR_B->text().toInt();
+        msB.passes      = ui->Lp_B->text().toInt();
+        msB.possesion   = ui->PosP_B->text().toInt();
         msB.scorers     = ui->Strzelcy_B->text().split(",", Qt::SkipEmptyParts);
+        msB.ustawienia_zaawansowane = true;
 
-        getOrCreateExt(teamBName)->addMatch(msB);
+
+
 
 
     }
+
+    getOrCreateExt(teamAName)->addMatch(msA);
+    getOrCreateExt(teamBName)->addMatch(msB);
+
 
     for(int i = 0; i < m_teams.size(); ++i)
     {
@@ -205,7 +209,7 @@ void MainWindow::on_Save_Button_clicked()
         "Pliki tekstowe (*.txt);;Wszystkie pliki (*)"
         );
 
-    if (path.isEmpty()) //czyli user zamknal okno, anulowal
+    if (path.isEmpty())
         return;
 
     qDebug() << path;
@@ -215,7 +219,7 @@ void MainWindow::on_Save_Button_clicked()
 
 
     if (zapisano) {
-        QMessageBox::information(this, "Sukces", "Zapisano dane do pliku.");
+        QMessageBox::information(this, "Sukces", "Zapisano wyniki do pliku.");
     } else {
         QMessageBox::critical(this, "Błąd", "Nie udało się zapisać danych do pliku.");
     }
@@ -237,7 +241,7 @@ void MainWindow::on_details_clicked()
     int indexA = -1;
     int indexB = -1;
 
-    // Szukamy drużyny rozszerzonej po nazwie
+
     for (int i = 0; i < m_advTeams.size(); ++i)
     {
         if (m_advTeams[i]->getName() == nameA) indexA = i;
@@ -249,41 +253,48 @@ void MainWindow::on_details_clicked()
         QMessageBox::information(this,
                                  "Brak danych",
                                  "Przynajmniej jedna z drużyn nie posiada danych zaawansowanych.");
+        return;
     }
 
     Details dlg(m_advTeams[indexA],m_advTeams[indexB], this); //idz do konstruktora w details.cpp
     dlg.exec();
     return;
+
 }
 
 
+QStringList MainWindow::losujStrzelcow(int liczbaGoli, const QStringList& listaNazwisk)
+{
+    QStringList wynik;
+
+    for (int i = 0; i < liczbaGoli; ++i)
+    {
+        int idx = QRandomGenerator::global()->bounded(listaNazwisk.size());
+        wynik << listaNazwisk[idx];
+    }
+
+    return wynik;
+}
+
 void MainWindow::on_DEMO_clicked()
 {
-    QStringList nazwiska = {
+    const QStringList nazwiska = {
         "Lewandowski", "Messi", "Haaland", "Mbappe",
         "Benzema", "Salah", "Kane", "Foden"
     };
 
-    auto losujStrzelcow = [&](int liczbaGoli) -> QStringList {
-        QStringList lista;
-        for (int i = 0; i < liczbaGoli; ++i) {
-            int idx = QRandomGenerator::global()->bounded(nazwiska.size());
-            lista << nazwiska[idx];
-        }
-        return lista;
-    };
 
-    // --- LOSOWANIE DANYCH DLA DRUŻYNY A -------------------------
+
     int RzutRA      = QRandomGenerator::global()->bounded(0,10);
     int LiczbPA     = QRandomGenerator::global()->bounded(211,390);
     int PosesjaA    = QRandomGenerator::global()->bounded(0,100);
-    int goalsA      = QRandomGenerator::global()->bounded(0, 5);   // 0–4 gole
-    int shotsA      = QRandomGenerator::global()->bounded(5, 16);  // 5–15 strzałów
-    int onTargetA   = QRandomGenerator::global()->bounded(2, qMin(shotsA, 9) + 1); // max celnych = shotsA
-    int xGA         = QRandomGenerator::global()->bounded(qMax(goalsA - 1, 0), goalsA + 2); // około gola ±1
-    QStringList scorersA = losujStrzelcow(goalsA);
+    int goalsA      = QRandomGenerator::global()->bounded(0, 5);
+    int shotsA      = QRandomGenerator::global()->bounded(5, 16);
+    int onTargetA   = QRandomGenerator::global()->bounded(2, qMin(shotsA, 9) + 1);
+    int xGA         = QRandomGenerator::global()->bounded(qMax(goalsA - 1, 0), goalsA + 2);
+    QStringList scorersA = losujStrzelcow(goalsA, nazwiska);
 
-    // --- LOSOWANIE DLA DRUŻYNY B -------------------------------
+
     int RzutRB      = QRandomGenerator::global()->bounded(0,10);
     int LiczbPB      = QRandomGenerator::global()->bounded(211,390);
     int PosesjaB   = QRandomGenerator::global()->bounded(PosesjaA,100);
@@ -291,9 +302,9 @@ void MainWindow::on_DEMO_clicked()
     int shotsB      = QRandomGenerator::global()->bounded(5, 16);
     int onTargetB   = QRandomGenerator::global()->bounded(2, qMin(shotsB, 9) + 1);
     int xGB         = QRandomGenerator::global()->bounded(qMax(goalsB - 1, 0), goalsB + 2);
-    QStringList scorersB = losujStrzelcow(goalsB);
+    QStringList scorersB = losujStrzelcow(goalsB, nazwiska);
 
-    // --- WYPEŁNIANIE UI ----------------------------------------
+
     ui->spinBox_A->setValue(goalsA);
     ui->spinBox_B->setValue(goalsB);
 
@@ -314,9 +325,6 @@ void MainWindow::on_DEMO_clicked()
     ui->StrzNBr_B->setText(QString::number(onTargetB));
     ui->OczGol_B->setText(QString::number(xGB));
     ui->Strzelcy_B->setText(scorersB.join(", "));
-
-
-    // --- DOMYŚLNE DANE ----------------------------------------
 
 }
 
@@ -349,6 +357,34 @@ void MainWindow::on_edytuj_A_clicked()
     }
 }
 
+
+
+
+void MainWindow::on_edytuj_B_clicked()
+{
+    QString name = ui->select_B->currentText();
+    if (name.isEmpty()) return;
+
+    Edytuj dlg(name, this);
+    if (dlg.exec() == QDialog::Accepted)
+    {
+        QString newName = dlg.GetNewName();
+        if (!newName.isEmpty() && newName != name)
+        {
+            for (Teams& t : m_teams)
+                if (t.getName() == name)
+                    t.setName(newName);
+
+            for (ExtendedTeams* et : m_advTeams)
+                if (et->getName() == name)
+                    et->setName(newName);
+
+            refreshCombos();
+            model->setTeams(m_teams);
+        }
+    }
+}
+
 void MainWindow::on_actionDodaj_turniej_triggered()
 {
     QString name = QInputDialog::getText(this, "Dodawanie turnieju", "Nazwa nowego turnieju:", QLineEdit::Normal, "");
@@ -367,5 +403,6 @@ void MainWindow::on_tournamentList_currentTextChanged(const QString &arg1)
     model->setTeams(m_teams); // potencjalnie nieoptymalnie
     ui->scoresTable->setModel(model);
     refreshCombos();
+
 }
 

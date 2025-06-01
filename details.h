@@ -1,5 +1,6 @@
 #ifndef DETAILS_H
 #define DETAILS_H
+#include "BusinessLogic/teams.h"
 #include "BusinessLogic/extended-teams.h"
 #include <QDialog>
 

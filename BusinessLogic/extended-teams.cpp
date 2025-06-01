@@ -1,40 +1,36 @@
 #include "extended-teams.h"
 
-ExtendedTeams::ExtendedTeams(const QString& name)
-    : Teams(name)
+ExtendedTeams::ExtendedTeams(const QString& name): Teams(name)
 {}
 
 
 void ExtendedTeams::addMatch(const MatchStats& m) //parametrem jest referencja do nowo-utworzonego w mainwindow.cpp obiektu struktury
 {
-    m_matches.append(m); //QVector<MatchStats> m_matches; znajdziesz w skladowych prywatnych extended-teams.h
+    Teams::addMatch(m);
 
-
-    Teams::addMatch(m.goalsFor, m.goalsAg); //bazowy konstruktor dla podstawowych danych
-
-
-    totalShotsOnTarget += m.shotsOnTgt;
-    totalShots         += m.shotsTot;
-    totalExpectedG     += m.expectedG;
-
-    for (int i = 0; i < m.scorers.size(); ++i) //PATRZ DOKLADNIE m.scorers - odnosisz sie do pola QStringList scorers w Match Stats - match-specify
-
+    if(m.ustawienia_zaawansowane)
     {
-        QString name = m.scorers[i];
-        bool found = false;
+        totalShotsOnTarget += m.shotsOnTgt;
+        totalShots         += m.shotsTot;
+        totalPasses         += m.passes;
+        totalPossesion      +=m.possesion;
+        totalCorners        +=m.corners;
 
-        for (int j = 0; j < m_scorers.size(); ++j) //PATRZ DOKLADNIE QVector<QPair<QString, int>> m_scorers;
+        for (int i = 0; i < m.scorers.size(); ++i)
         {
-            if (m_scorers[j].first == name)        //czyli vector, ktory przechowuje mapowania (strzelec, liczba goli)
-            {
-                m_scorers[j].second += 1;           //iterujesz po wektorach .first to jest klucz - strzelec
-                found = true;                       // .second to wartosc czyli liczba zdobytych goli
-                break;
-            }
-        }
+            const QString& s = m.scorers[i];
+            bool found = false;
 
-        if (!found)
-            m_scorers.append(qMakePair(name, 1));
+            for (int j = 0; j < m_scorers.size(); ++j)
+                if (m_scorers[j].first == s)
+                {
+                    m_scorers[j].second++;
+                    found = true;
+                    break;
+                }
+
+            if (!found) m_scorers.append(qMakePair(s, 1));
+        }
     }
 }
 
@@ -62,19 +58,43 @@ double ExtendedTeams::poissonProb(double lambda, int k)
 
 double ExtendedTeams::expectedGoalsAccuracy() const
 {
-    if (m_matches.isEmpty()) return 0.0;
+    double sumProb = 0.0;
+    int    count   = 0;
 
-    double wynik = 0;
-    for(int i = 0; i < getMatchesPlayed(); i++)
+    const QVector<MatchStats>& mm = matches();
+    for (int i = 0; i < mm.size(); ++i)
     {
-        double lambda = m_matches[i].expectedG;
-        double k = m_matches[i].goalsFor;
-        wynik += poissonProb(lambda, k);
+        if (!mm[i].ustawienia_zaawansowane) continue;
+
+        sumProb += poissonProb(mm[i].expectedG, mm[i].goalsFor);
+        ++count;
     }
 
+    return count ? 100.0 * sumProb / count : 0.0;
+}
 
+double ExtendedTeams::averageCorners() const
+{
+    const QVector<MatchStats>& mm = matches();
 
-    return 100.0 * wynik / m_matches.size();  // w %
+    return static_cast<double>(totalCorners / mm.size());
+
+}
+
+double ExtendedTeams::averagePasses() const
+{
+    const QVector<MatchStats>& mm = matches();
+
+    return static_cast<double>(totalPasses / mm.size());
+
+}
+
+double ExtendedTeams::averagePosession() const
+{
+    const QVector<MatchStats>& mm = matches();
+
+    return static_cast<double>(totalPossesion / mm.size());
+
 }
 
 QString ExtendedTeams::topScorer() const

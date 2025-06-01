@@ -2,20 +2,38 @@
 #define TEAMS_H
 
 #include "BusinessLogic_global.h"
+#include "match-specify.h"
+#include <QVector>
 #include <Qstring>
 
 class BUSINESSLOGIC_EXPORT Teams
 {
+private:
+
+    QString m_name;
+    QVector<MatchStats> m_matches;
+
+    int m_goalsFor = 0;
+    int m_goalsAgainst = 0;
+    int m_matchesPlayed = 0;
+    int m_points = 0;
+
 public:
-    Teams(const QString &name = "");
+
+    explicit Teams(const QString &name = "");
 
     QString getName() const;
 
-    void addMatch(int goalsFor, int goalsAgainst);
+    void addMatch(const MatchStats& m);
+    void addMatch(int goalsFor, int goalsAg);
+    const QVector<MatchStats>& matches() const;
+
+
     int getPoints() const;
     int getGoalsFor() const;
     int getGoalsAgainst() const;
     int getMatchesPlayed() const;
+
     void setPoints(int p);
     void setGoalsFor(int g);
     void setGoalsAgainst(int g);
@@ -25,14 +43,9 @@ public:
 
     virtual void setName(const QString & name);
 
+    bool operator==(const Teams& other) const;
+    bool operator<(const Teams& other)  const;
 
-
-private:
-    QString name;
-    int points;
-    int goalsFor;
-    int goalsAgainst;
-    int matchesPlayed;
 };
 
 #endif // TEAMS_H

@@ -43,13 +43,18 @@ private slots:
 
     void on_edytuj_A_clicked();
 
+
+    void on_edytuj_B_clicked();
+
     void on_actionDodaj_turniej_triggered();
 
     void on_tournamentList_currentTextChanged(const QString &arg1);
 
+
 private:
     void refreshCombos();
     ExtendedTeams* getOrCreateExt(const QString& name);
+    QStringList losujStrzelcow(int liczbaGoli, const QStringList& nazwiska);
 
     Ui::MainWindow *ui;
     QHash<QString, QVector<Teams>> tournaments; // hash mapa na wszystkie turnieje
