@@ -113,8 +113,9 @@ void MainWindow::on_add_match_clicked()
     QString teamBName = ui->select_B->currentText();
     int goalsA = ui->spinBox_A->value();
     int goalsB = ui->spinBox_B->value();
-
     int indexA = -1, indexB = -1;
+
+    try {
     for (int i = 0; i < m_teams.size(); ++i) {
         if (m_teams[i].getName() == teamAName) indexA = i;
         if (m_teams[i].getName() == teamBName) indexB = i;
@@ -122,11 +123,20 @@ void MainWindow::on_add_match_clicked()
 
     if (indexA == -1 || indexB == -1) {
         QMessageBox::warning(this, "Błąd", "Nie znaleziono jednej z drużyn.");
-        return;
+        throw TeamNotFound("Nie znaleziono drużyny");
     }
 
     if (indexA == indexB) {
         QMessageBox::warning(this, "Błąd", "Nie można rozegrać meczu przeciwko sobie.");
+        throw SameTeamGame("Wybrane tą samą drużynę dwa razy");
+    }
+    }
+    catch (const TeamNotFound &e) {
+        qDebug() << e.what();
+        return;
+    }
+    catch (const SameTeamGame &e) {
+        qDebug() << e.what();
         return;
     }
 
@@ -195,17 +205,31 @@ void MainWindow::on_Load_Button_clicked()
         "Pliki tekstowe (*.txt)"            //const QString &filter = QString(), taki format mam osobiscie na windowsie
         );
 
-    if (path.isEmpty()) return; // THROW
+    try {
+    if (path.isEmpty())
+            throw WrongFilePath("Zła ścieżka: " + path.toStdString());
+    }
+    catch (const WrongFilePath &e) {
+        qDebug() << e.what();
+        return;
+    }
 
-    qDebug() << path;
+    // qDebug() << path;
 
     QVector<Teams> loaded = FileOp::loadFromFile(path);
+    try {
     if (loaded.isEmpty()) {
         QMessageBox::warning(this, "Błąd", "Nie udało się wczytać danych.");
-        return;
-    } // THROW
-
+        throw ReadFileError("Nie można wczytać danych");
     m_teams = loaded;
+    }
+    }
+    catch (const ReadFileError &e) {
+        qDebug() << e.what();
+        return;
+    }
+
+
     refreshCombos();
     model->setTeams(m_teams);
 }
@@ -220,18 +244,30 @@ void MainWindow::on_Save_Button_clicked()
         "Pliki tekstowe (*.txt);;Wszystkie pliki (*)"
         );
 
+    try {
     if (path.isEmpty())
-        return; // THROW
+        throw WrongFilePath("Zła ścieżka: " + path.toStdString());
+    }
+    catch (const WrongFilePath &e)
+    {
+        qDebug() << e.what();
+        return;
+    }
 
-    qDebug() << path;
-
+    // qDebug() << path;
 
     bool zapisano = FileOp::saveToFile(m_teams, path); // THROW
 
-
+    try {
     if (zapisano) {
         QMessageBox::information(this, "Sukces", "Zapisano wyniki do pliku.");
     } else {
+        throw WriteFileError("Nie udało się zapisać danych do pliku:" + path.toStdString());
+    }
+    }
+    catch (const WriteFileError &e)
+    {
+        qDebug() << e.what();
         QMessageBox::critical(this, "Błąd", "Nie udało się zapisać danych do pliku.");
     }
 }
@@ -253,6 +289,7 @@ void MainWindow::on_details_clicked()
     int indexB = -1;
 
 
+    try {
     for (int i = 0; i < m_advTeams.size(); ++i)
     {
         if (m_advTeams[i]->getName() == nameA) indexA = i;
@@ -261,15 +298,19 @@ void MainWindow::on_details_clicked()
 
     if (indexA == -1 || indexB == -1)
     {
-        QMessageBox::information(this,
-                                 "Brak danych",
-                                 "Przynajmniej jedna z drużyn nie posiada danych zaawansowanych.");
-        return;
+        throw NoAdvTeam("Nie ma danych zaawansowanych");
     }
 
     Details dlg(m_advTeams[indexA],m_advTeams[indexB], this); //idz do konstruktora w details.cpp
     dlg.exec();
-    return;
+    }
+    catch (const NoAdvTeam &e)
+    {
+        QMessageBox::information(this,
+                                 "Brak danych",
+                                 "Przynajmniej jedna z drużyn nie posiada danych zaawansowanych.");
+        qDebug() << e.what();
+    }
 
 }
 
@@ -344,8 +385,14 @@ void MainWindow::on_edytuj_A_clicked()
 {
     QString name = ui->select_A->currentText();
 
+    try {
     if (name.isEmpty())
-        return; // THROW
+        throw TeamNotFound("Nie można edytować pustej drużyny");
+    }
+    catch (const TeamNotFound &e) {
+        qDebug() << e.what();
+        return;
+    }
 
     Edytuj dlg(name, this);
     if(dlg.exec() == QDialog::Accepted)
@@ -365,7 +412,7 @@ void MainWindow::on_edytuj_A_clicked()
         refreshCombos();
         model->setTeams(m_teams);
 
-    } // THROW
+    }
 }
 
 
@@ -374,7 +421,14 @@ void MainWindow::on_edytuj_A_clicked()
 void MainWindow::on_edytuj_B_clicked()
 {
     QString name = ui->select_B->currentText();
-    if (name.isEmpty()) return;
+    try {
+        if (name.isEmpty())
+            throw TeamNotFound("Nie można edytować pustej drużyny");
+    }
+    catch (const TeamNotFound &e) {
+        qDebug() << e.what();
+        return;
+    }
 
     Edytuj dlg(name, this);
     if (dlg.exec() == QDialog::Accepted)
