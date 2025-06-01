@@ -8,6 +8,7 @@
 #include <QDebug>
 #include <QFileDialog>
 #include <QCheckBox>
+#include <QInputDialog>
 
 
 
@@ -17,9 +18,14 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
     model = new TeamsModel();
     ui->scoresTable->setModel(model); // dzięki temu tabela zawsze będzie mieć kolumny, nawet zanim dodamy zespoły
     ui->scoresTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch); // dzięki temu kolumny tabeli skalują się do okna
+
     ui->formWidget_A->setEnabled(false); //formWidget_A - lewe zaawansowane ustawienia standardowo sa ukryte
     ui->formWidget_B->setEnabled(false); //....... prawe ukryte
     ui->Zaawansowane_CheckBox->setChecked(false); //standardowo zaawansowane nie jest zaznaczony
+
+    currentTourName = QInputDialog::getText(this, "Podaj nazwe turnieju", "Nazwa:", QLineEdit::Normal, "");
+    tournaments[currentTourName] = m_teams;
+    refreshCombos();
 }
 
 MainWindow::~MainWindow() { delete ui; }
@@ -74,6 +80,13 @@ ExtendedTeams* MainWindow::getOrCreateExt(const QString& name)
 
 void MainWindow::refreshCombos()
 {
+    for(auto it = tournaments.begin(); it!=tournaments.end(); ++it)
+    {
+        if(ui->tournamentList->findText(it.key()) == -1)
+        {
+            ui->tournamentList->addItem(it.key());
+        }
+    }
     ui->select_A->clear();
     ui->select_B->clear();
     for (int i = 0; i < m_teams.size(); ++i)
@@ -212,7 +225,6 @@ void MainWindow::on_Save_Button_clicked()
     }
 }
 
-
 void MainWindow::on_Zaawansowane_CheckBox_stateChanged(int arg1)
 {
     bool zaznaczony = (arg1 == Qt::Checked);
@@ -347,6 +359,7 @@ void MainWindow::on_edytuj_A_clicked()
 
 
 
+
 void MainWindow::on_edytuj_B_clicked()
 {
     QString name = ui->select_B->currentText();
@@ -370,5 +383,26 @@ void MainWindow::on_edytuj_B_clicked()
             model->setTeams(m_teams);
         }
     }
+}
+
+void MainWindow::on_actionDodaj_turniej_triggered()
+{
+    QString name = QInputDialog::getText(this, "Dodawanie turnieju", "Nazwa nowego turnieju:", QLineEdit::Normal, "");
+    tournaments[name] = QList<Teams>();
+    refreshCombos();
+}
+
+
+void MainWindow::on_tournamentList_currentTextChanged(const QString &arg1)
+{
+    tournaments[currentTourName] = m_teams;
+    currentTourName = arg1;
+    m_teams = tournaments[currentTourName];
+    if(model == nullptr)
+        model = new TeamsModel();
+    model->setTeams(m_teams); // potencjalnie nieoptymalnie
+    ui->scoresTable->setModel(model);
+    refreshCombos();
+
 }
 

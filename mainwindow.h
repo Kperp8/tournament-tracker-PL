@@ -9,6 +9,8 @@
 #include "details.h"
 #include <QRandomGenerator>
 #include "edytuj.h"
+#include <QHash>
+#include <QString>
          // include z biblioteki
 
 QT_BEGIN_NAMESPACE
@@ -41,7 +43,13 @@ private slots:
 
     void on_edytuj_A_clicked();
 
+
     void on_edytuj_B_clicked();
+
+    void on_actionDodaj_turniej_triggered();
+
+    void on_tournamentList_currentTextChanged(const QString &arg1);
+
 
 private:
     void refreshCombos();
@@ -49,6 +57,8 @@ private:
     QStringList losujStrzelcow(int liczbaGoli, const QStringList& nazwiska);
 
     Ui::MainWindow *ui;
+    QHash<QString, QVector<Teams>> tournaments; // hash mapa na wszystkie turnieje
+    QString currentTourName; // nazwa obecnego turnieju
     QVector<Teams>  m_teams;
     TeamsModel * model = nullptr;
     QVector<ExtendedTeams*>  m_advTeams;
