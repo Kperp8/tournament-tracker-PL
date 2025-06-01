@@ -9,11 +9,11 @@ QString Teams::getName() const {
 
 void Teams::addMatch(int gf, int ga)
 {
-    m_goalsFor      += gf;
-    m_goalsAgainst  += ga;
+    m_goalsFor += gf;
+    m_goalsAgainst += ga;
     ++m_matchesPlayed;
 
-    if (gf > ga)      m_points += 3;
+    if (gf > ga) m_points += 3;
     else if (gf == ga) m_points += 1;
 }
 

@@ -141,11 +141,13 @@ void MainWindow::on_add_match_clicked()
         msB.ustawienia_zaawansowane = true;
 
 
-        getOrCreateExt(teamAName)->addMatch(msA);
-        getOrCreateExt(teamBName)->addMatch(msB);
+
 
 
     }
+
+    getOrCreateExt(teamAName)->addMatch(msA);
+    getOrCreateExt(teamBName)->addMatch(msB);
 
 
     for(int i = 0; i < m_teams.size(); ++i)
@@ -194,7 +196,7 @@ void MainWindow::on_Save_Button_clicked()
         "Pliki tekstowe (*.txt);;Wszystkie pliki (*)"
         );
 
-    if (path.isEmpty()) //czyli user zamknal okno, anulowal
+    if (path.isEmpty())
         return;
 
     qDebug() << path;
@@ -227,7 +229,7 @@ void MainWindow::on_details_clicked()
     int indexA = -1;
     int indexB = -1;
 
-    // Szukamy drużyny rozszerzonej po nazwie
+
     for (int i = 0; i < m_advTeams.size(); ++i)
     {
         if (m_advTeams[i]->getName() == nameA) indexA = i;
@@ -249,21 +251,26 @@ void MainWindow::on_details_clicked()
 }
 
 
+QStringList MainWindow::losujStrzelcow(int liczbaGoli, const QStringList& listaNazwisk)
+{
+    QStringList wynik;
+
+    for (int i = 0; i < liczbaGoli; ++i)
+    {
+        int idx = QRandomGenerator::global()->bounded(listaNazwisk.size());
+        wynik << listaNazwisk[idx];
+    }
+
+    return wynik;
+}
+
 void MainWindow::on_DEMO_clicked()
 {
-    QStringList nazwiska = {
+    const QStringList nazwiska = {
         "Lewandowski", "Messi", "Haaland", "Mbappe",
         "Benzema", "Salah", "Kane", "Foden"
     };
 
-    auto losujStrzelcow = [&](int liczbaGoli) -> QStringList {
-        QStringList lista;
-        for (int i = 0; i < liczbaGoli; ++i) {
-            int idx = QRandomGenerator::global()->bounded(nazwiska.size());
-            lista << nazwiska[idx];
-        }
-        return lista;
-    };
 
 
     int RzutRA      = QRandomGenerator::global()->bounded(0,10);
@@ -273,7 +280,7 @@ void MainWindow::on_DEMO_clicked()
     int shotsA      = QRandomGenerator::global()->bounded(5, 16);
     int onTargetA   = QRandomGenerator::global()->bounded(2, qMin(shotsA, 9) + 1);
     int xGA         = QRandomGenerator::global()->bounded(qMax(goalsA - 1, 0), goalsA + 2);
-    QStringList scorersA = losujStrzelcow(goalsA);
+    QStringList scorersA = losujStrzelcow(goalsA, nazwiska);
 
 
     int RzutRB      = QRandomGenerator::global()->bounded(0,10);
@@ -283,7 +290,7 @@ void MainWindow::on_DEMO_clicked()
     int shotsB      = QRandomGenerator::global()->bounded(5, 16);
     int onTargetB   = QRandomGenerator::global()->bounded(2, qMin(shotsB, 9) + 1);
     int xGB         = QRandomGenerator::global()->bounded(qMax(goalsB - 1, 0), goalsB + 2);
-    QStringList scorersB = losujStrzelcow(goalsB);
+    QStringList scorersB = losujStrzelcow(goalsB, nazwiska);
 
 
     ui->spinBox_A->setValue(goalsA);

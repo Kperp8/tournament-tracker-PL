@@ -46,6 +46,7 @@ private slots:
 private:
     void refreshCombos();
     ExtendedTeams* getOrCreateExt(const QString& name);
+    QStringList losujStrzelcow(int liczbaGoli, const QStringList& nazwiska);
 
     Ui::MainWindow *ui;
     QVector<Teams>  m_teams;
