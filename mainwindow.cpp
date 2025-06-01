@@ -9,6 +9,7 @@
 #include <QFileDialog>
 #include <QCheckBox>
 #include <QInputDialog>
+#include "exceptions.h"
 
 
 
@@ -34,16 +35,26 @@ void MainWindow::on_add_team_clicked()
 {
     const QString name = ui->lineEdit_druzyna->text().trimmed();
 
+    try {
     if (name.isEmpty()) {
         QMessageBox::warning(this, "Błąd", "Nazwa drużyny nie może być pusta.");
-        return;
+        throw NoTeamName("Nazwa drużyny jest pusta");
     }
     for (int i = 0; i < m_teams.size(); ++i) {                       // const Teams&
         if (m_teams[i].getName() == name) {     // Case-Insensitive
             QMessageBox::warning(this, "Błąd",
                                  "Taka drużyna już istnieje.");
-            return;
+            throw WrongTeamName("Nazwa drużyny jest błędna");
         }
+    }
+    }
+    catch (const NoTeamName &e) {
+        qDebug() << e.what();
+        return;
+    }
+    catch (const WrongTeamName &e) {
+        qDebug() << e.what();
+        return;
     }
 
 
