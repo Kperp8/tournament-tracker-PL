@@ -3,4 +3,5 @@
 
 // plik na klasy wyjątków
 
+
 #endif // EXCEPTIONS_H

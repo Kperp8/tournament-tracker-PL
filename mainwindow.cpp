@@ -184,7 +184,7 @@ void MainWindow::on_Load_Button_clicked()
         "Pliki tekstowe (*.txt)"            //const QString &filter = QString(), taki format mam osobiscie na windowsie
         );
 
-    if (path.isEmpty()) return;
+    if (path.isEmpty()) return; // THROW
 
     qDebug() << path;
 
@@ -192,7 +192,7 @@ void MainWindow::on_Load_Button_clicked()
     if (loaded.isEmpty()) {
         QMessageBox::warning(this, "Błąd", "Nie udało się wczytać danych.");
         return;
-    }
+    } // THROW
 
     m_teams = loaded;
     refreshCombos();
@@ -210,12 +210,12 @@ void MainWindow::on_Save_Button_clicked()
         );
 
     if (path.isEmpty())
-        return;
+        return; // THROW
 
     qDebug() << path;
 
 
-    bool zapisano = FileOp::saveToFile(m_teams, path);
+    bool zapisano = FileOp::saveToFile(m_teams, path); // THROW
 
 
     if (zapisano) {
@@ -334,7 +334,7 @@ void MainWindow::on_edytuj_A_clicked()
     QString name = ui->select_A->currentText();
 
     if (name.isEmpty())
-        return;
+        return; // THROW
 
     Edytuj dlg(name, this);
     if(dlg.exec() == QDialog::Accepted)
@@ -354,7 +354,7 @@ void MainWindow::on_edytuj_A_clicked()
         refreshCombos();
         model->setTeams(m_teams);
 
-    }
+    } // THROW
 }
 
 
@@ -382,7 +382,7 @@ void MainWindow::on_edytuj_B_clicked()
             refreshCombos();
             model->setTeams(m_teams);
         }
-    }
+    } // THROW
 }
 
 void MainWindow::on_actionDodaj_turniej_triggered()
