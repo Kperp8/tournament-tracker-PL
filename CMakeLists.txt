@@ -26,6 +26,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         ${PROJECT_SOURCES}
         details.h details.cpp details.ui
         edytuj.h edytuj.cpp edytuj.ui
+        exceptions.h
     )
 else()
     if(ANDROID)
