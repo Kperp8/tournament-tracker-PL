@@ -221,14 +221,13 @@ void MainWindow::on_Load_Button_clicked()
     if (loaded.isEmpty()) {
         QMessageBox::warning(this, "Błąd", "Nie udało się wczytać danych.");
         throw ReadFileError("Nie można wczytać danych");
-    m_teams = loaded;
     }
     }
     catch (const ReadFileError &e) {
         qDebug() << e.what();
         return;
     }
-
+    m_teams = loaded;
 
     refreshCombos();
     model->setTeams(m_teams);
