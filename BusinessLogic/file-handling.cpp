@@ -4,22 +4,22 @@
 #include <QStringList>
 #include <QDebug>
 
-
-
-QVector<Teams> FileOp::loadFromFile(const QString& path) //path przypisujemy w mainwindow.cpp QString path = QFileDialog::getOpenFileName
+QVector<Teams> FileOp::loadFromFile(const QString &path)
 {
     QVector<Teams> teams;
     QFile file(path);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) { //QTextStream czytamy QStrings nie bajty, nie wiem czy forcowac konkretny encoding
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
         qDebug() << "Nie można otworzyć pliku do odczytu:" << path;
         return teams;
     }
 
     QTextStream in(&file);
-    while (!in.atEnd()) {
-        QString line = in.readLine();           //https://doc.qt.io/qt-6/qfile.html
-        QStringList parts = line.split(",");    // FCB,7,4,2,3
-        if (parts.size() != 5)                  // MAN UTD,5,2,4,5 itd..
+    while (!in.atEnd())
+    {
+        QString line = in.readLine();
+        QStringList parts = line.split(",");
+        if (parts.size() != 5)
             continue;
 
         QString name = parts[0];
@@ -41,16 +41,18 @@ QVector<Teams> FileOp::loadFromFile(const QString& path) //path przypisujemy w m
     return teams;
 }
 
-bool FileOp::saveToFile(const QVector<Teams>& teams, const QString& path)
+bool FileOp::saveToFile(const QVector<Teams> &teams, const QString &path)
 {
     QFile file(path);
-    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
         qDebug() << "Nie można otworzyć pliku do zapisu:" << path;
         return false;
     }
 
     QTextStream out(&file);
-    for (int i = 0; i < teams.size(); i++) {
+    for (int i = 0; i < teams.size(); i++)
+    {
         out << teams[i].getName() << ","
             << teams[i].getPoints() << ","
             << teams[i].getGoalsFor() << ","
@@ -61,11 +63,3 @@ bool FileOp::saveToFile(const QVector<Teams>& teams, const QString& path)
     file.close();
     return true;
 }
-
-//dla czytania mozesz skopiowac:
-/*
-FCB,9,12,4,3
-MAN CITY,6,8,5,3
-MAN UTD,3,4,7,3
-RM,0,4,12,3
-*/

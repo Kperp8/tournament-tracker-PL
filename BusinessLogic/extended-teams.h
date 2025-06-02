@@ -7,15 +7,12 @@
 #include <QtMath>
 #include <QtMath>
 
-
 class BUSINESSLOGIC_EXPORT ExtendedTeams : public Teams
 {
 public:
-    explicit ExtendedTeams(const QString& name = "");
+    explicit ExtendedTeams(const QString &name = "");
 
-
-    void addMatch(const MatchStats& m);
-
+    void addMatch(const MatchStats &m);
 
     double goalsPerMatch() const;
     double shootingAccuracy() const;
@@ -24,19 +21,18 @@ public:
     double averageCorners() const;
     double averagePasses() const;
     QString topScorer() const;
-    void setName(const QString & name) override;
+    void setName(const QString &name) override;
 
 private:
-
     static double poissonProb(double lambda, int k);
 
     int totalShotsOnTarget = 0;
-    int totalShots         = 0;
-    int totalPasses        = 0;
-    int totalCorners       = 0;
-    int totalPossesion     = 0;
+    int totalShots = 0;
+    int totalPasses = 0;
+    int totalCorners = 0;
+    int totalPossesion = 0;
 
-    QVector<QPair<QString, int>> m_scorers; //czyli vector, ktory przechowuje mapowania (strzelec, liczba goli)
+    QVector<QPair<QString, int>> m_scorers;
     //
 };
 

@@ -11,18 +11,16 @@
 #include <QInputDialog>
 #include "exceptions.h"
 
-
-
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
     model = new TeamsModel();
-    ui->scoresTable->setModel(model); // dzięki temu tabela zawsze będzie mieć kolumny, nawet zanim dodamy zespoły
-    ui->scoresTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch); // dzięki temu kolumny tabeli skalują się do okna
+    ui->scoresTable->setModel(model);
+    ui->scoresTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
-    ui->formWidget_A->setEnabled(false); //formWidget_A - lewe zaawansowane ustawienia standardowo sa ukryte
-    ui->formWidget_B->setEnabled(false); //....... prawe ukryte
-    ui->Zaawansowane_CheckBox->setChecked(false); //standardowo zaawansowane nie jest zaznaczony
+    ui->formWidget_A->setEnabled(false);
+    ui->formWidget_B->setEnabled(false);
+    ui->Zaawansowane_CheckBox->setChecked(false);
 
     currentTourName = QInputDialog::getText(this, "Podaj nazwe turnieju", "Nazwa:", QLineEdit::Normal, "");
     tournaments[currentTourName] = m_teams;
@@ -35,65 +33,69 @@ void MainWindow::on_add_team_clicked()
 {
     const QString name = ui->lineEdit_druzyna->text().trimmed();
 
-    try {
-    if (name.isEmpty()) {
-        QMessageBox::warning(this, "Błąd", "Nazwa drużyny nie może być pusta.");
-        throw NoTeamName("Nazwa drużyny jest pusta");
-    }
-    for (int i = 0; i < m_teams.size(); ++i) {                       // const Teams&
-        if (m_teams[i].getName() == name) {     // Case-Insensitive
-            QMessageBox::warning(this, "Błąd",
-                                 "Taka drużyna już istnieje.");
-            throw WrongTeamName("Nazwa drużyny jest błędna");
+    try
+    {
+        if (name.isEmpty())
+        {
+            QMessageBox::warning(this, "Błąd", "Nazwa drużyny nie może być pusta.");
+            throw NoTeamName("Nazwa drużyny jest pusta");
+        }
+        for (int i = 0; i < m_teams.size(); ++i)
+        {
+            if (m_teams[i].getName() == name)
+            {
+                QMessageBox::warning(this, "Błąd",
+                                     "Taka drużyna już istnieje.");
+                throw WrongTeamName("Nazwa drużyny jest błędna");
+            }
         }
     }
-    }
-    catch (const NoTeamName &e) {
+    catch (const NoTeamName &e)
+    {
         qDebug() << e.what();
         return;
     }
-    catch (const WrongTeamName &e) {
+    catch (const WrongTeamName &e)
+    {
         qDebug() << e.what();
         return;
     }
 
-
-    if(m_teams.append(Teams(name)); true)
+    if (m_teams.append(Teams(name)); true)
     {
         qDebug() << "dodano" << name;
-        for(int i = 0; i < m_teams.size(); ++i)
+        for (int i = 0; i < m_teams.size(); ++i)
         {
             qDebug() << i << m_teams[i].getName();
         }
-
     }
     refreshCombos();
     ui->lineEdit_druzyna->clear();
 
-    if(model == nullptr)
+    if (model == nullptr)
         model = new TeamsModel();
-    model->setTeams(m_teams); // potencjalnie nieoptymalnie
+    model->setTeams(m_teams);
     ui->scoresTable->setModel(model);
 }
 
-ExtendedTeams* MainWindow::getOrCreateExt(const QString& name)
+ExtendedTeams *MainWindow::getOrCreateExt(const QString &name)
 {
-    for (int i = 0; i < m_advTeams.size(); ++i)     //QVector<ExtendedTeams*>  m_advTeams - jest w definicji mainwindow.h
+    for (int i = 0; i < m_advTeams.size(); ++i)
     {
-        if (m_advTeams[i]->getName() == name)       //szukamy czy juz istnieje taka druzyne w extended klasie
+        if (m_advTeams[i]->getName() == name)
             return m_advTeams[i];
     }
 
-    ExtendedTeams* t = new ExtendedTeams(name);     //jak nie tworzymy nowa
+    ExtendedTeams *t = new ExtendedTeams(name);
     m_advTeams.append(t);
     return t;
 }
 
 void MainWindow::refreshCombos()
 {
-    for(auto it = tournaments.begin(); it!=tournaments.end(); ++it)
+    for (auto it = tournaments.begin(); it != tournaments.end(); ++it)
     {
-        if(ui->tournamentList->findText(it.key()) == -1)
+        if (ui->tournamentList->findText(it.key()) == -1)
         {
             ui->tournamentList->addItem(it.key());
         }
@@ -115,27 +117,35 @@ void MainWindow::on_add_match_clicked()
     int goalsB = ui->spinBox_B->value();
     int indexA = -1, indexB = -1;
 
-    try {
-    for (int i = 0; i < m_teams.size(); ++i) {
-        if (m_teams[i].getName() == teamAName) indexA = i;
-        if (m_teams[i].getName() == teamBName) indexB = i;
-    }
+    try
+    {
+        for (int i = 0; i < m_teams.size(); ++i)
+        {
+            if (m_teams[i].getName() == teamAName)
+                indexA = i;
+            if (m_teams[i].getName() == teamBName)
+                indexB = i;
+        }
 
-    if (indexA == -1 || indexB == -1) {
-        QMessageBox::warning(this, "Błąd", "Nie znaleziono jednej z drużyn.");
-        throw TeamNotFound("Nie znaleziono drużyny");
-    }
+        if (indexA == -1 || indexB == -1)
+        {
+            QMessageBox::warning(this, "Błąd", "Nie znaleziono jednej z drużyn.");
+            throw TeamNotFound("Nie znaleziono drużyny");
+        }
 
-    if (indexA == indexB) {
-        QMessageBox::warning(this, "Błąd", "Nie można rozegrać meczu przeciwko sobie.");
-        throw SameTeamGame("Wybrane tą samą drużynę dwa razy");
+        if (indexA == indexB)
+        {
+            QMessageBox::warning(this, "Błąd", "Nie można rozegrać meczu przeciwko sobie.");
+            throw SameTeamGame("Wybrane tą samą drużynę dwa razy");
+        }
     }
-    }
-    catch (const TeamNotFound &e) {
+    catch (const TeamNotFound &e)
+    {
         qDebug() << e.what();
         return;
     }
-    catch (const SameTeamGame &e) {
+    catch (const SameTeamGame &e)
+    {
         qDebug() << e.what();
         return;
     }
@@ -143,87 +153,81 @@ void MainWindow::on_add_match_clicked()
     MatchStats msA;
     msA.date = QDate::currentDate();
     msA.goalsFor = goalsA;
-    msA.goalsAg  = goalsB;
+    msA.goalsAg = goalsB;
 
     MatchStats msB;
     msB.date = QDate::currentDate();
     msB.goalsFor = goalsB;
-    msB.goalsAg  = goalsA;
+    msB.goalsAg = goalsA;
 
     m_teams[indexA].addMatch(msA);
     m_teams[indexB].addMatch(msB);
 
     if (ui->Zaawansowane_CheckBox->isChecked())
     {
-        msA.shotsOnTgt  = ui->StrzNBr_A->text().toInt();
-        msA.shotsTot    = ui->StrzL_A->text().toInt();
-        msA.expectedG   = ui->OczGol_A->text().toInt();
-        msA.corners     = ui->RzutR_A->text().toInt();
-        msA.passes      = ui->Lp_A->text().toInt();
-        msA.possesion   = ui->PosP_A->text().toInt();
-        msA.scorers     = ui->Strzelcy_A->text().split(",", Qt::SkipEmptyParts);
+        msA.shotsOnTgt = ui->StrzNBr_A->text().toInt();
+        msA.shotsTot = ui->StrzL_A->text().toInt();
+        msA.expectedG = ui->OczGol_A->text().toInt();
+        msA.corners = ui->RzutR_A->text().toInt();
+        msA.passes = ui->Lp_A->text().toInt();
+        msA.possesion = ui->PosP_A->text().toInt();
+        msA.scorers = ui->Strzelcy_A->text().split(",", Qt::SkipEmptyParts);
         msA.ustawienia_zaawansowane = true;
 
-
-        msB.shotsOnTgt  = ui->StrzNBr_B->text().toInt();
-        msB.shotsTot    = ui->StrzL_B->text().toInt();
-        msB.expectedG   = ui->OczGol_B->text().toInt();
-        msB.corners     = ui->RzutR_B->text().toInt();
-        msB.passes      = ui->Lp_B->text().toInt();
-        msB.possesion   = ui->PosP_B->text().toInt();
-        msB.scorers     = ui->Strzelcy_B->text().split(",", Qt::SkipEmptyParts);
+        msB.shotsOnTgt = ui->StrzNBr_B->text().toInt();
+        msB.shotsTot = ui->StrzL_B->text().toInt();
+        msB.expectedG = ui->OczGol_B->text().toInt();
+        msB.corners = ui->RzutR_B->text().toInt();
+        msB.passes = ui->Lp_B->text().toInt();
+        msB.possesion = ui->PosP_B->text().toInt();
+        msB.scorers = ui->Strzelcy_B->text().split(",", Qt::SkipEmptyParts);
         msB.ustawienia_zaawansowane = true;
-
-
-
-
-
     }
 
     getOrCreateExt(teamAName)->addMatch(msA);
     getOrCreateExt(teamBName)->addMatch(msB);
 
-
-    for(int i = 0; i < m_teams.size(); ++i)
+    for (int i = 0; i < m_teams.size(); ++i)
     {
         m_teams[i].displayData();
     }
 
-    if(model == nullptr)
+    if (model == nullptr)
         model = new TeamsModel();
-    model->setTeams(m_teams); // potencjalnie nieoptymalnie
+    model->setTeams(m_teams);
     ui->scoresTable->setModel(model);
 }
-
 
 void MainWindow::on_Load_Button_clicked()
 {
     QString path = QFileDialog::getOpenFileName(
-        this,                       //QWidget *parent, to jakbys potrzebowal i chcial cos zmienic
-        "Wczytaj dane drużyn",          //const QString &caption,
-        "",                             //const QString &dir = QString(),
-        "Pliki tekstowe (*.txt)"            //const QString &filter = QString(), taki format mam osobiscie na windowsie
-        );
+        this,
+        "Wczytaj dane drużyn",
+        "",
+        "Pliki tekstowe (*.txt)");
 
-    try {
-    if (path.isEmpty())
+    try
+    {
+        if (path.isEmpty())
             throw WrongFilePath("Zła ścieżka: " + path.toStdString());
     }
-    catch (const WrongFilePath &e) {
+    catch (const WrongFilePath &e)
+    {
         qDebug() << e.what();
         return;
     }
 
-    // qDebug() << path;
-
     QVector<Teams> loaded = FileOp::loadFromFile(path);
-    try {
-    if (loaded.isEmpty()) {
-        QMessageBox::warning(this, "Błąd", "Nie udało się wczytać danych.");
-        throw ReadFileError("Nie można wczytać danych");
+    try
+    {
+        if (loaded.isEmpty())
+        {
+            QMessageBox::warning(this, "Błąd", "Nie udało się wczytać danych.");
+            throw ReadFileError("Nie można wczytać danych");
+        }
     }
-    }
-    catch (const ReadFileError &e) {
+    catch (const ReadFileError &e)
+    {
         qDebug() << e.what();
         return;
     }
@@ -233,19 +237,18 @@ void MainWindow::on_Load_Button_clicked()
     model->setTeams(m_teams);
 }
 
-
 void MainWindow::on_Save_Button_clicked()
 {
     QString path = QFileDialog::getSaveFileName(
         this,
         "Zapisz dane drużyn",
         "",
-        "Pliki tekstowe (*.txt);;Wszystkie pliki (*)"
-        );
+        "Pliki tekstowe (*.txt);;Wszystkie pliki (*)");
 
-    try {
-    if (path.isEmpty())
-        throw WrongFilePath("Zła ścieżka: " + path.toStdString());
+    try
+    {
+        if (path.isEmpty())
+            throw WrongFilePath("Zła ścieżka: " + path.toStdString());
     }
     catch (const WrongFilePath &e)
     {
@@ -253,16 +256,18 @@ void MainWindow::on_Save_Button_clicked()
         return;
     }
 
-    // qDebug() << path;
+    bool zapisano = FileOp::saveToFile(m_teams, path);
 
-    bool zapisano = FileOp::saveToFile(m_teams, path); // THROW
-
-    try {
-    if (zapisano) {
-        QMessageBox::information(this, "Sukces", "Zapisano wyniki do pliku.");
-    } else {
-        throw WriteFileError("Nie udało się zapisać danych do pliku:" + path.toStdString());
-    }
+    try
+    {
+        if (zapisano)
+        {
+            QMessageBox::information(this, "Sukces", "Zapisano wyniki do pliku.");
+        }
+        else
+        {
+            throw WriteFileError("Nie udało się zapisać danych do pliku:" + path.toStdString());
+        }
     }
     catch (const WriteFileError &e)
     {
@@ -274,10 +279,9 @@ void MainWindow::on_Save_Button_clicked()
 void MainWindow::on_Zaawansowane_CheckBox_stateChanged(int arg1)
 {
     bool zaznaczony = (arg1 == Qt::Checked);
-    ui->formWidget_A->setEnabled(zaznaczony); //uzylem setEnabled zamiast setVisible żeby layout zawsze byl ten sam
-    ui->formWidget_B->setEnabled(zaznaczony);   //setEnabled(false) == zaciemnione komorki
+    ui->formWidget_A->setEnabled(zaznaczony);
+    ui->formWidget_B->setEnabled(zaznaczony);
 }
-
 
 void MainWindow::on_details_clicked()
 {
@@ -287,21 +291,23 @@ void MainWindow::on_details_clicked()
     int indexA = -1;
     int indexB = -1;
 
-
-    try {
-    for (int i = 0; i < m_advTeams.size(); ++i)
+    try
     {
-        if (m_advTeams[i]->getName() == nameA) indexA = i;
-        if (m_advTeams[i]->getName() == nameB) indexB = i;
-    }
+        for (int i = 0; i < m_advTeams.size(); ++i)
+        {
+            if (m_advTeams[i]->getName() == nameA)
+                indexA = i;
+            if (m_advTeams[i]->getName() == nameB)
+                indexB = i;
+        }
 
-    if (indexA == -1 || indexB == -1)
-    {
-        throw NoAdvTeam("Nie ma danych zaawansowanych");
-    }
+        if (indexA == -1 || indexB == -1)
+        {
+            throw NoAdvTeam("Nie ma danych zaawansowanych");
+        }
 
-    Details dlg(m_advTeams[indexA],m_advTeams[indexB], this); //idz do konstruktora w details.cpp
-    dlg.exec();
+        Details dlg(m_advTeams[indexA], m_advTeams[indexB], this);
+        dlg.exec();
     }
     catch (const NoAdvTeam &e)
     {
@@ -310,11 +316,9 @@ void MainWindow::on_details_clicked()
                                  "Przynajmniej jedna z drużyn nie posiada danych zaawansowanych.");
         qDebug() << e.what();
     }
-
 }
 
-
-QStringList MainWindow::losujStrzelcow(int liczbaGoli, const QStringList& listaNazwisk)
+QStringList MainWindow::losujStrzelcow(int liczbaGoli, const QStringList &listaNazwisk)
 {
     QStringList wynik;
 
@@ -331,34 +335,28 @@ void MainWindow::on_DEMO_clicked()
 {
     const QStringList nazwiska = {
         "Lewandowski", "Messi", "Haaland", "Mbappe",
-        "Benzema", "Salah", "Kane", "Foden"
-    };
+        "Benzema", "Salah", "Kane", "Foden"};
 
-
-
-    int RzutRA      = QRandomGenerator::global()->bounded(0,10);
-    int LiczbPA     = QRandomGenerator::global()->bounded(211,390);
-    int PosesjaA    = QRandomGenerator::global()->bounded(0,100);
-    int goalsA      = QRandomGenerator::global()->bounded(0, 5);
-    int shotsA      = QRandomGenerator::global()->bounded(5, 16);
-    int onTargetA   = QRandomGenerator::global()->bounded(2, qMin(shotsA, 9) + 1);
-    int xGA         = QRandomGenerator::global()->bounded(qMax(goalsA - 1, 0), goalsA + 2);
+    int RzutRA = QRandomGenerator::global()->bounded(0, 10);
+    int LiczbPA = QRandomGenerator::global()->bounded(211, 390);
+    int PosesjaA = QRandomGenerator::global()->bounded(0, 100);
+    int goalsA = QRandomGenerator::global()->bounded(0, 5);
+    int shotsA = QRandomGenerator::global()->bounded(5, 16);
+    int onTargetA = QRandomGenerator::global()->bounded(2, qMin(shotsA, 9) + 1);
+    int xGA = QRandomGenerator::global()->bounded(qMax(goalsA - 1, 0), goalsA + 2);
     QStringList scorersA = losujStrzelcow(goalsA, nazwiska);
 
-
-    int RzutRB      = QRandomGenerator::global()->bounded(0,10);
-    int LiczbPB      = QRandomGenerator::global()->bounded(211,390);
-    int PosesjaB   = QRandomGenerator::global()->bounded(PosesjaA,100);
-    int goalsB      = QRandomGenerator::global()->bounded(0, 5);
-    int shotsB      = QRandomGenerator::global()->bounded(5, 16);
-    int onTargetB   = QRandomGenerator::global()->bounded(2, qMin(shotsB, 9) + 1);
-    int xGB         = QRandomGenerator::global()->bounded(qMax(goalsB - 1, 0), goalsB + 2);
+    int RzutRB = QRandomGenerator::global()->bounded(0, 10);
+    int LiczbPB = QRandomGenerator::global()->bounded(211, 390);
+    int PosesjaB = QRandomGenerator::global()->bounded(PosesjaA, 100);
+    int goalsB = QRandomGenerator::global()->bounded(0, 5);
+    int shotsB = QRandomGenerator::global()->bounded(5, 16);
+    int onTargetB = QRandomGenerator::global()->bounded(2, qMin(shotsB, 9) + 1);
+    int xGB = QRandomGenerator::global()->bounded(qMax(goalsB - 1, 0), goalsB + 2);
     QStringList scorersB = losujStrzelcow(goalsB, nazwiska);
-
 
     ui->spinBox_A->setValue(goalsA);
     ui->spinBox_B->setValue(goalsB);
-
 
     ui->Lp_A->setText(QString::number(LiczbPA));
     ui->RzutR_A->setText(QString::number(RzutRA));
@@ -368,7 +366,6 @@ void MainWindow::on_DEMO_clicked()
     ui->OczGol_A->setText(QString::number(xGA));
     ui->Strzelcy_A->setText(scorersA.join(", "));
 
-
     ui->Lp_B->setText(QString::number(LiczbPB));
     ui->RzutR_B->setText(QString::number(RzutRB));
     ui->PosP_B->setText(QString::number(PosesjaB));
@@ -376,55 +373,54 @@ void MainWindow::on_DEMO_clicked()
     ui->StrzNBr_B->setText(QString::number(onTargetB));
     ui->OczGol_B->setText(QString::number(xGB));
     ui->Strzelcy_B->setText(scorersB.join(", "));
-
 }
-
 
 void MainWindow::on_edytuj_A_clicked()
 {
     QString name = ui->select_A->currentText();
 
-    try {
-    if (name.isEmpty())
-        throw TeamNotFound("Nie można edytować pustej drużyny");
+    try
+    {
+        if (name.isEmpty())
+            throw TeamNotFound("Nie można edytować pustej drużyny");
     }
-    catch (const TeamNotFound &e) {
+    catch (const TeamNotFound &e)
+    {
         qDebug() << e.what();
         return;
     }
 
     Edytuj dlg(name, this);
-    if(dlg.exec() == QDialog::Accepted)
+    if (dlg.exec() == QDialog::Accepted)
     {
         QString NewName = dlg.GetNewName();
 
-        if(NewName.isEmpty() || NewName == name) return;
+        if (NewName.isEmpty() || NewName == name)
+            return;
 
-        for (Teams& t: m_teams)
-            if(t.getName() == name)
+        for (Teams &t : m_teams)
+            if (t.getName() == name)
                 t.setName(NewName);
 
-        for (ExtendedTeams* ex: m_advTeams)
-            if(ex->getName() == name)
+        for (ExtendedTeams *ex : m_advTeams)
+            if (ex->getName() == name)
                 ex->setName(NewName);
 
         refreshCombos();
         model->setTeams(m_teams);
-
     }
 }
-
-
-
 
 void MainWindow::on_edytuj_B_clicked()
 {
     QString name = ui->select_B->currentText();
-    try {
+    try
+    {
         if (name.isEmpty())
             throw TeamNotFound("Nie można edytować pustej drużyny");
     }
-    catch (const TeamNotFound &e) {
+    catch (const TeamNotFound &e)
+    {
         qDebug() << e.what();
         return;
     }
@@ -435,18 +431,18 @@ void MainWindow::on_edytuj_B_clicked()
         QString newName = dlg.GetNewName();
         if (!newName.isEmpty() && newName != name)
         {
-            for (Teams& t : m_teams)
+            for (Teams &t : m_teams)
                 if (t.getName() == name)
                     t.setName(newName);
 
-            for (ExtendedTeams* et : m_advTeams)
+            for (ExtendedTeams *et : m_advTeams)
                 if (et->getName() == name)
                     et->setName(newName);
 
             refreshCombos();
             model->setTeams(m_teams);
         }
-    } // THROW
+    }
 }
 
 void MainWindow::on_actionDodaj_turniej_triggered()
@@ -456,17 +452,14 @@ void MainWindow::on_actionDodaj_turniej_triggered()
     refreshCombos();
 }
 
-
 void MainWindow::on_tournamentList_currentTextChanged(const QString &arg1)
 {
     tournaments[currentTourName] = m_teams;
     currentTourName = arg1;
     m_teams = tournaments[currentTourName];
-    if(model == nullptr)
+    if (model == nullptr)
         model = new TeamsModel();
-    model->setTeams(m_teams); // potencjalnie nieoptymalnie
+    model->setTeams(m_teams);
     ui->scoresTable->setModel(model);
     refreshCombos();
-
 }
-

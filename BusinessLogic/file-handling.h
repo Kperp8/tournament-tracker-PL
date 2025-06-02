@@ -8,9 +8,8 @@
 class BUSINESSLOGIC_EXPORT FileOp
 {
 public:
-    static bool saveToFile(const QVector<Teams>& teams, const QString& path);
-    static QVector<Teams> loadFromFile(const QString& path);
+    static bool saveToFile(const QVector<Teams> &teams, const QString &path);
+    static QVector<Teams> loadFromFile(const QString &path);
 };
-
 
 #endif // FILE_HANDLING_H
