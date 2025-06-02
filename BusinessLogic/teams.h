@@ -9,7 +9,6 @@
 class BUSINESSLOGIC_EXPORT Teams
 {
 private:
-
     QString m_name;
     QVector<MatchStats> m_matches;
 
@@ -19,15 +18,13 @@ private:
     int m_points = 0;
 
 public:
-
     explicit Teams(const QString &name = "");
 
     QString getName() const;
 
-    void addMatch(const MatchStats& m);
+    void addMatch(const MatchStats &m);
     void addMatch(int goalsFor, int goalsAg);
-    const QVector<MatchStats>& matches() const;
-
+    const QVector<MatchStats> &matches() const;
 
     int getPoints() const;
     int getGoalsFor() const;
@@ -41,11 +38,10 @@ public:
 
     virtual void displayData() const;
 
-    virtual void setName(const QString & name);
+    virtual void setName(const QString &name);
 
-    bool operator==(const Teams& other) const;
-    bool operator<(const Teams& other)  const;
-
+    bool operator==(const Teams &other) const;
+    bool operator<(const Teams &other) const;
 };
 
 #endif // TEAMS_H
